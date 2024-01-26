@@ -51,7 +51,7 @@ final loggedInUserDataProvider = AutoDisposeProvider<User?>.internal(
 );
 
 typedef LoggedInUserDataRef = AutoDisposeProviderRef<User?>;
-String _$loggedInUserHash() => r'fe665faf28005eb37bdb2290215b70a6e0c3ef04';
+String _$loggedInUserHash() => r'ae3e7531e954524065b7bc6f8acd48c5d766dfcb';
 
 /// See also [loggedInUser].
 @ProviderFor(loggedInUser)
@@ -65,5 +65,21 @@ final loggedInUserProvider = AutoDisposeProvider<LoggedInUser?>.internal(
 );
 
 typedef LoggedInUserRef = AutoDisposeProviderRef<LoggedInUser?>;
+String _$detailSelectStateHash() => r'82a7baeee4c0f3c4827f4fefaa8da9c71c5f0794';
+
+/// See also [DetailSelectState].
+@ProviderFor(DetailSelectState)
+final detailSelectStateProvider =
+    AutoDisposeNotifierProvider<DetailSelectState, bool>.internal(
+  DetailSelectState.new,
+  name: r'detailSelectStateProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$detailSelectStateHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+typedef _$DetailSelectState = AutoDisposeNotifier<bool>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

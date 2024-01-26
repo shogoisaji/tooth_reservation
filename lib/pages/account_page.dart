@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:tooth_reservation/models/logged_in_user.dart';
 import 'package:tooth_reservation/services/auth_service.dart';
@@ -18,40 +19,49 @@ class AccountPage extends ConsumerWidget {
     final userData = ref.watch(loggedInUserProvider);
     print('userData:${userData != null ? userData.email : ''}');
 
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text('アカウント'),
-        Text('name:${userData != null ? userData.username : 'null'}'),
-        Text('email:${userData != null ? userData.email : 'null'}'),
-        Text('number:${userData != null ? userData.phoneNumber : 'null'}'),
-        TextField(
-          decoration: InputDecoration(
-            labelText: 'new password',
-          ),
-          controller: _passwordController,
-        ),
-        ElevatedButton(
-          child: Text('パスワードの変更'),
-          onPressed: () async {
-            await _authService.changePassword(
-              _passwordController.text,
-            );
-          },
-        ),
-        ElevatedButton(
-          child: Text('Eメールの変更'),
-          onPressed: () {
-            // サインアップロジックをここに追加
-          },
-        ),
-        ElevatedButton(
-          child: Text('ログアウト'),
-          onPressed: () {
-            _authService.signOut();
-          },
-        ),
-      ],
-    );
+    return userData != null
+        ? Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text('アカウント'),
+              Text('name:${userData != null ? userData.username : 'null'}'),
+              Text('email:${userData != null ? userData.email : 'null'}'),
+              Text('number:${userData != null ? userData.phoneNumber : 'null'}'),
+              TextField(
+                decoration: InputDecoration(
+                  labelText: 'new password',
+                ),
+                controller: _passwordController,
+              ),
+              ElevatedButton(
+                child: Text('パスワードの変更'),
+                onPressed: () async {
+                  await _authService.changePassword(
+                    _passwordController.text,
+                  );
+                },
+              ),
+              ElevatedButton(
+                child: Text('Eメールの変更'),
+                onPressed: () {
+                  // サインアップロジックをここに追加
+                },
+              ),
+              ElevatedButton(
+                child: Text('ログアウト'),
+                onPressed: () {
+                  _authService.signOut();
+                },
+              )
+            ],
+          )
+        : Center(
+            child: ElevatedButton(
+              child: Text('ログインページ'),
+              onPressed: () {
+                context.go('/login');
+              },
+            ),
+          );
   }
 }

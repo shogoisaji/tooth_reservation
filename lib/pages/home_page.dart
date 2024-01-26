@@ -1,29 +1,32 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:tooth_reservation/services/auth_service.dart';
+import 'package:tooth_reservation/states/state.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends ConsumerWidget {
   const HomePage({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final AuthService _authService = AuthService();
+    final userName = ref.watch(loggedInUserProvider)?.username ?? '未ログイン';
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('ホーム'),
+        title: const Text('ホーム'),
         actions: [
-          IconButton(
-            icon: Icon(Icons.logout),
-            onPressed: () {
-              _authService.signOut();
-            },
-          ),
-          IconButton(
-            icon: Icon(Icons.account_circle),
-            onPressed: () {
-              context.go('/home/account');
-            },
+          Row(
+            children: [
+              Text(userName),
+              IconButton(
+                icon: const Icon(Icons.account_circle),
+                padding: const EdgeInsets.only(right: 12.0),
+                onPressed: () {
+                  context.go('/home/account');
+                },
+              ),
+            ],
           ),
         ],
       ),

@@ -40,3 +40,13 @@ LoggedInUser? loggedInUser(LoggedInUserRef ref) {
     phoneNumber: userData.userMetadata!['phone_number'] ?? '電話番号未登録',
   );
 }
+
+@riverpod
+class DetailSelectState extends _$DetailSelectState {
+  @override
+  bool build() => false;
+
+  void show() => state = true;
+
+  void hide() => state = false;
+}

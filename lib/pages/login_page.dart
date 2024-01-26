@@ -118,6 +118,12 @@ class LoginPage extends ConsumerWidget {
                     );
                   },
                 ),
+                ElevatedButton(
+                  child: const Text('ログインしなで利用'),
+                  onPressed: () {
+                    context.go('/home');
+                  },
+                ),
               ],
             ),
           ),

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:supabase/supabase.dart';
+import 'package:tooth_reservation/models/logged_in_user.dart';
 
 part 'state.g.dart';
 
@@ -18,11 +19,24 @@ Stream<Session?> sessionResponse(SessionResponseRef ref) {
 }
 
 @riverpod
-User? user(UserRef ref) {
+User? loggedInUserData(LoggedInUserDataRef ref) {
   final session = ref.watch(sessionResponseProvider);
   return session.when(
     loading: () => null,
     error: (_, __) => null,
     data: (d) => d?.user,
+  );
+}
+
+@riverpod
+LoggedInUser? loggedInUser(LoggedInUserRef ref) {
+  final User? userData = ref.watch(loggedInUserDataProvider);
+  if (userData == null) {
+    return null;
+  }
+  return LoggedInUser(
+    username: userData.userMetadata!['user_name'],
+    email: userData.email ?? '',
+    phoneNumber: userData.userMetadata!['phone_number'] ?? '電話番号未登録',
   );
 }

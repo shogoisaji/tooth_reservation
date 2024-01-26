@@ -36,19 +36,34 @@ final sessionResponseProvider = AutoDisposeStreamProvider<Session?>.internal(
 );
 
 typedef SessionResponseRef = AutoDisposeStreamProviderRef<Session?>;
-String _$userHash() => r'ab2df5873e3ef7f2c712e327805bedfeab043ca4';
+String _$loggedInUserDataHash() => r'ec6b0a483e64861f7811b720997670639d6e4ba6';
 
-/// See also [user].
-@ProviderFor(user)
-final userProvider = AutoDisposeProvider<User?>.internal(
-  user,
-  name: r'userProvider',
-  debugGetCreateSourceHash:
-      const bool.fromEnvironment('dart.vm.product') ? null : _$userHash,
+/// See also [loggedInUserData].
+@ProviderFor(loggedInUserData)
+final loggedInUserDataProvider = AutoDisposeProvider<User?>.internal(
+  loggedInUserData,
+  name: r'loggedInUserDataProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$loggedInUserDataHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
-typedef UserRef = AutoDisposeProviderRef<User?>;
+typedef LoggedInUserDataRef = AutoDisposeProviderRef<User?>;
+String _$loggedInUserHash() => r'fe665faf28005eb37bdb2290215b70a6e0c3ef04';
+
+/// See also [loggedInUser].
+@ProviderFor(loggedInUser)
+final loggedInUserProvider = AutoDisposeProvider<LoggedInUser?>.internal(
+  loggedInUser,
+  name: r'loggedInUserProvider',
+  debugGetCreateSourceHash:
+      const bool.fromEnvironment('dart.vm.product') ? null : _$loggedInUserHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+typedef LoggedInUserRef = AutoDisposeProviderRef<LoggedInUser?>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

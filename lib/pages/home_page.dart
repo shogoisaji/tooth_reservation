@@ -17,7 +17,12 @@ class HomePage extends StatelessWidget {
             icon: Icon(Icons.logout),
             onPressed: () {
               _authService.signOut();
-              // ログアウトロジックをここに追加
+            },
+          ),
+          IconButton(
+            icon: Icon(Icons.account_circle),
+            onPressed: () {
+              context.go('/home/account');
             },
           ),
         ],

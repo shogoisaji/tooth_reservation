@@ -42,7 +42,7 @@ GoRouter router(RouterRef ref) {
           path: 'reservation',
           builder: (BuildContext context, GoRouterState state) {
             return Scaffold(
-              appBar: AppBar(title: Text('Second')),
+              appBar: AppBar(title: Text('予約')),
               body: const ReservationPage(),
             );
           },

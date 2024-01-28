@@ -17,7 +17,6 @@ class AccountPage extends ConsumerWidget {
     final TextEditingController _emailController = TextEditingController();
     final TextEditingController _passwordController = TextEditingController();
     final userData = ref.watch(loggedInUserProvider);
-    print('userData:${userData != null ? userData.email : ''}');
 
     return userData != null
         ? Column(

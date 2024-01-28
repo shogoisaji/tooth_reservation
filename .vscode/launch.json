@@ -1,0 +1,19 @@
+{
+    "configurations": [
+        {
+            "name": "Flutter (Chrome)",
+            "program": "lib/main.dart",
+            "deviceId": "chrome",
+            "request": "launch",
+            "type": "dart"
+        },
+        {
+            "name": "Flutter Port 8000",
+            "program": "lib/main.dart",
+            "deviceId": "chrome",
+            "request": "launch",
+            "type": "dart",
+            "args": ["--web-port", "8000"]
+        }
+    ]
+}

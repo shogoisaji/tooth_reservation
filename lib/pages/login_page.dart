@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:tooth_reservation/services/auth_service.dart';
+import 'package:tooth_reservation/states/state.dart';
 
-class LoginPage extends ConsumerWidget {
+class LoginPage extends HookConsumerWidget {
   const LoginPage({super.key});
 
   @override
@@ -12,6 +15,13 @@ class LoginPage extends ConsumerWidget {
     final TextEditingController _passwordController = TextEditingController();
 
     final AuthService _authService = AuthService();
+
+    useEffect(() {
+      if (ref.read(loggedInUserProvider) != null) {
+        context.go('/home');
+      }
+      return null;
+    }, []);
 
     return Scaffold(
       appBar: AppBar(

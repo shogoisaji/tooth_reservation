@@ -30,22 +30,17 @@ class HomePage extends ConsumerWidget {
           ),
         ],
       ),
-      body: Column(
-        children: [
-          Center(
-            child: Text(
-              'Hello, world!',
-              style: Theme.of(context).textTheme.headline4,
+      body: Center(
+        child: Column(
+          children: [
+            ElevatedButton(
+              child: Text('予約'),
+              onPressed: () {
+                context.go('/home/reservation');
+              },
             ),
-          ),
-          ElevatedButton(
-            child: Text('予約'),
-            onPressed: () {
-              context.go('/home/reservation');
-              // ログアウトロジックをここに追加
-            },
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

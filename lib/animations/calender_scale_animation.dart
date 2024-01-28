@@ -1,8 +1,8 @@
 import 'package:flutter/widgets.dart';
 
 class CalenderScaleAnimation extends StatefulWidget {
-  final Widget child;
   final bool isScale;
+  final Widget child;
   const CalenderScaleAnimation({super.key, required this.child, required this.isScale});
 
   @override
@@ -20,11 +20,6 @@ class _CalenderScaleAnimationState extends State<CalenderScaleAnimation> with Si
 
   void forward() {
     _controller.forward();
-    // _controller.addStatusListener((status) {
-    //   if (status == AnimationStatus.completed) {
-    //     _controller.reset();
-    //   }
-    // });
   }
 
   @override

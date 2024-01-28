@@ -266,7 +266,6 @@ class DayContent extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final h = MediaQuery.of(context).size.height;
     final isScale = useState<bool>(false);
     return CalenderScaleAnimation(
       isScale: isScale.value,

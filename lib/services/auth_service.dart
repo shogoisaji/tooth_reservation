@@ -38,17 +38,6 @@ class AuthService {
     await supabase.auth.signOut();
   }
 
-// change password
-  Future<void> changePassword(newPassword) async {
-    final UserResponse res = await supabase.auth.updateUser(
-      UserAttributes(
-        password: newPassword,
-      ),
-    );
-    final User? updatedUser = res.user;
-    print('success update user');
-  }
-
 // reset password
   Future<void> resetPassword() async {
     await supabase.auth.reauthenticate();

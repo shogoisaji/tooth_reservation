@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:tooth_reservation/animations/calender_scale_animation.dart';
 import 'package:tooth_reservation/states/state.dart';
 
 class ReservationSelectWidget extends HookConsumerWidget {
@@ -10,8 +9,6 @@ class ReservationSelectWidget extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isScale = useState(false);
-    final scaleIndex = useState<int?>(null);
     const durationValue = 300;
     final animationController = useAnimationController(duration: const Duration(milliseconds: durationValue));
     final animation = CurvedAnimation(parent: animationController, curve: Curves.easeInOut);

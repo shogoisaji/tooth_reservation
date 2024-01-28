@@ -1,8 +1,6 @@
 import 'dart:async';
-import 'dart:html';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/physics.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:tooth_reservation/animations/calender_scale_animation.dart';
@@ -47,215 +45,216 @@ class ReservationPage extends HookConsumerWidget {
       };
     }, []);
 
-    return Stack(
-      children: [
-        Center(
-          child: Container(
-            width: _calenderWidth,
-            color: Colors.grey[100],
-            child: Stack(
-              children: [
-                Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.arrow_back_ios),
-                          onPressed: () {
-                            int newMonth = selectedMonth.value["month"]! - 1;
-                            int newYear = selectedMonth.value["year"]!;
-                            if (newMonth == 0) {
-                              newMonth = 12;
-                              newYear = newYear - 1;
-                            }
-                            selectedMonth.value = {"year": newYear, "month": newMonth};
-                          },
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            selectedMonth.value = {"year": DateTime.now().year, "month": DateTime.now().month};
-                          },
-                          child: Text(
-                            "${selectedMonth.value["year"]}年${selectedMonth.value["month"]}月",
-                            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+    return SafeArea(
+      child: Stack(
+        children: [
+          Center(
+            child: Container(
+              width: _calenderWidth,
+              color: Colors.grey[100],
+              child: Stack(
+                children: [
+                  Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.arrow_back_ios),
+                            onPressed: () {
+                              int newMonth = selectedMonth.value["month"]! - 1;
+                              int newYear = selectedMonth.value["year"]!;
+                              if (newMonth == 0) {
+                                newMonth = 12;
+                                newYear = newYear - 1;
+                              }
+                              selectedMonth.value = {"year": newYear, "month": newMonth};
+                            },
                           ),
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.arrow_forward_ios),
-                          onPressed: () {
-                            int newMonth = selectedMonth.value["month"]! + 1;
-                            int newYear = selectedMonth.value["year"]!;
-                            if (newMonth == 13) {
-                              newMonth = 1;
-                              newYear = newYear + 1;
-                            }
-                            selectedMonth.value = {"year": newYear, "month": newMonth};
-                          },
-                        ),
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        ...List.generate(
-                          7,
-                          (index) => Container(
-                            alignment: Alignment.center,
-                            width: _calenderWidth / 7,
-                            padding: const EdgeInsets.all(4.0),
-                            child: Container(
-                              width: double.infinity,
-                              alignment: Alignment.center,
-                              decoration:
-                                  BoxDecoration(borderRadius: BorderRadius.circular(4.0), color: Colors.blue[100]),
-                              child: Text(
-                                [
-                                  "日",
-                                  "月",
-                                  "火",
-                                  "水",
-                                  "木",
-                                  "金",
-                                  "土",
-                                ][index],
+                          GestureDetector(
+                            onTap: () {
+                              selectedMonth.value = {"year": DateTime.now().year, "month": DateTime.now().month};
+                            },
+                            child: Text(
+                              "${selectedMonth.value["year"]}年${selectedMonth.value["month"]}月",
+                              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.arrow_forward_ios),
+                            onPressed: () {
+                              int newMonth = selectedMonth.value["month"]! + 1;
+                              int newYear = selectedMonth.value["year"]!;
+                              if (newMonth == 13) {
+                                newMonth = 1;
+                                newYear = newYear + 1;
+                              }
+                              selectedMonth.value = {"year": newYear, "month": newMonth};
+                            },
+                          ),
+                        ],
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          ...List.generate(
+                            7,
+                            (index) => Container(
+                              width: _calenderWidth / 7.5,
+                              padding: const EdgeInsets.all(2.0),
+                              child: Container(
+                                alignment: Alignment.center,
+                                padding: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 4.0),
+                                decoration:
+                                    BoxDecoration(borderRadius: BorderRadius.circular(4.0), color: Colors.blue[100]),
+                                child: Text(
+                                  [
+                                    "日",
+                                    "月",
+                                    "火",
+                                    "水",
+                                    "木",
+                                    "金",
+                                    "土",
+                                  ][index],
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                    Expanded(
-                      child: GridView.builder(
-                          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 7,
-                            crossAxisSpacing: 0,
-                            mainAxisSpacing: 0,
-                          ),
-                          itemCount:
-                              daysListGenerate(selectedMonth.value["year"]!, selectedMonth.value["month"]!).length +
-                                  getFirstWeekDay(),
-                          itemBuilder: (BuildContext context, int index) {
-                            // return index < getFirstWeekDay()
-                            //     ? Container()
-                            //     : DayContent(daysListGenerate(selectedMonth.value["year"]!, selectedMonth.value["month"]!)[
-                            //         index - getFirstWeekDay()]);
-                            final DateTime? day = index < getFirstWeekDay()
-                                ? null
-                                : daysListGenerate(selectedMonth.value["year"]!, selectedMonth.value["month"]!)[
-                                    index - getFirstWeekDay()];
-                            //   // 時間を無視して日付のみ
-                            //   final convertDate = DateTime(
-                            //     reservation.date.year,
-                            //     reservation.date.month,
-                            //     reservation.date.day,
-                            //   );
-                            //   return convertDate == day;
-                            // });
-                            int count = reservationList.value.where((reservation) {
-                              // 時間を無視して日付のみ
-                              final convertDate = DateTime(
-                                reservation.date.year,
-                                reservation.date.month,
-                                reservation.date.day,
-                              );
-                              return convertDate == day;
-                            }).length;
-                            final Color? color = count == 0
-                                ? Colors.red[100]
-                                : Colors.blue[100 * (count + 1) > 900 ? 900 : 100 * (count + 1)];
-                            return index < getFirstWeekDay() ? Container() : DayContent(day!, color!);
-                          }),
-                    ),
-                    StreamBuilder(
-                      stream: service.getReservationListAllStream(),
-                      builder: (context, AsyncSnapshot<List<Reservation>> snapshot) {
-                        if (snapshot.hasError) {
-                          print('エラーが発生しました: ${snapshot.error}');
-                          return Text('エラーが発生しました: ${snapshot.error}');
-                        } else if (snapshot.hasData) {
-                          return Column(
-                            children: [
-                              ...snapshot.data!.take(3).map((e) {
-                                DateFormat format = DateFormat('yyyy-MM-dd HH:mm');
-                                return Container(
-                                    padding: const EdgeInsets.all(4.0), child: Text(format.format(e.date)));
-                              }).toList(),
-                            ],
-                          );
-                        } else {
-                          return SizedBox(
-                            width: 60,
-                            height: 60,
-                            child: CircularProgressIndicator(),
-                          );
-                        }
-                      },
-                    ),
-                    SizedBox(
-                      width: 60,
-                      height: 60,
-                    ),
-                    !isDragCompleted.value
-                        ? Draggable(
-                            data: 1,
-                            child: Container(
-                              width: 50,
-                              height: 50,
-                              color: Colors.blue,
+                        ],
+                      ),
+                      Expanded(
+                        child: GridView.builder(
+                            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 7,
+                              crossAxisSpacing: 0,
+                              mainAxisSpacing: 0,
                             ),
-                            feedback: Container(
-                              width: 50,
-                              height: 50,
-                              color: Colors.blue,
-                            ),
-                            childWhenDragging: Container(
-                              width: 50,
-                              height: 50,
-                              color: Colors.transparent,
-                            ),
-                            onDragCompleted: () {
-                              print('drag completed');
-                              isDragCompleted.value = true;
-                            },
-                          )
-                        : Container(),
-                    ElevatedButton(
-                      onPressed: () {
-                        isDragCompleted.value = false;
-                        ref.read(detailSelectStateProvider.notifier).hide();
-                      },
-                      child: Text('reset'),
-                    ),
-                    ElevatedButton(
-                      onPressed: () async {
-                        try {
-                          final String? userId = ref.read(loggedInUserProvider)?.userId;
-                          final res = Reservation(
-                            id: 1,
-                            userId: userId,
-                            userName: 'test',
-                            email: 'email',
-                            phoneNumber: '000-0000-0000',
-                            date: DateTime(2024, 1, 29, 11, 30),
-                          );
-                          final service = ReservationService();
-                          final data = await service.insertReservation(res);
-                          print('data:$data');
-                        } catch (e) {
-                          print('エラーが発生しました: $e');
-                        }
-                      },
-                      child: Text('予約'),
-                    ),
-                  ],
-                ),
-                ref.watch(detailSelectStateProvider) ? Center(child: DetailSelect()) : Container(),
-              ],
+                            itemCount:
+                                daysListGenerate(selectedMonth.value["year"]!, selectedMonth.value["month"]!).length +
+                                    getFirstWeekDay(),
+                            itemBuilder: (BuildContext context, int index) {
+                              // return index < getFirstWeekDay()
+                              //     ? Container()
+                              //     : DayContent(daysListGenerate(selectedMonth.value["year"]!, selectedMonth.value["month"]!)[
+                              //         index - getFirstWeekDay()]);
+                              final DateTime? day = index < getFirstWeekDay()
+                                  ? null
+                                  : daysListGenerate(selectedMonth.value["year"]!, selectedMonth.value["month"]!)[
+                                      index - getFirstWeekDay()];
+                              //   // 時間を無視して日付のみ
+                              //   final convertDate = DateTime(
+                              //     reservation.date.year,
+                              //     reservation.date.month,
+                              //     reservation.date.day,
+                              //   );
+                              //   return convertDate == day;
+                              // });
+                              int count = reservationList.value.where((reservation) {
+                                // 時間を無視して日付のみ
+                                final convertDate = DateTime(
+                                  reservation.date.year,
+                                  reservation.date.month,
+                                  reservation.date.day,
+                                );
+                                return convertDate == day;
+                              }).length;
+                              final Color? color = count == 0
+                                  ? Colors.red[100]
+                                  : Colors.blue[100 * (count + 1) > 900 ? 900 : 100 * (count + 1)];
+                              return index < getFirstWeekDay() ? Container() : DayContent(day!, color!);
+                            }),
+                      ),
+                      StreamBuilder(
+                        stream: service.getReservationListAllStream(),
+                        builder: (context, AsyncSnapshot<List<Reservation>> snapshot) {
+                          if (snapshot.hasError) {
+                            print('エラーが発生しました: ${snapshot.error}');
+                            return Text('エラーが発生しました: ${snapshot.error}');
+                          } else if (snapshot.hasData) {
+                            return Column(
+                              children: [
+                                ...snapshot.data!.take(3).map((e) {
+                                  DateFormat format = DateFormat('yyyy-MM-dd HH:mm');
+                                  return Container(
+                                      padding: const EdgeInsets.all(4.0), child: Text(format.format(e.date)));
+                                }).toList(),
+                              ],
+                            );
+                          } else {
+                            return SizedBox(
+                              width: 60,
+                              height: 60,
+                              child: CircularProgressIndicator(),
+                            );
+                          }
+                        },
+                      ),
+                      SizedBox(
+                        width: 60,
+                        height: 60,
+                      ),
+                      !isDragCompleted.value
+                          ? Draggable(
+                              data: 1,
+                              child: Container(
+                                width: 50,
+                                height: 50,
+                                color: Colors.blue,
+                              ),
+                              feedback: Container(
+                                width: 50,
+                                height: 50,
+                                color: Colors.blue,
+                              ),
+                              childWhenDragging: Container(
+                                width: 50,
+                                height: 50,
+                                color: Colors.transparent,
+                              ),
+                              onDragCompleted: () {
+                                print('drag completed');
+                                isDragCompleted.value = true;
+                              },
+                            )
+                          : Container(),
+                      ElevatedButton(
+                        onPressed: () {
+                          isDragCompleted.value = false;
+                          ref.read(detailSelectStateProvider.notifier).hide();
+                        },
+                        child: Text('reset'),
+                      ),
+                      ElevatedButton(
+                        onPressed: () async {
+                          try {
+                            final String? userId = ref.read(loggedInUserProvider)?.userId;
+                            final res = Reservation(
+                              id: 1,
+                              userId: userId,
+                              userName: 'test',
+                              email: 'email',
+                              phoneNumber: '000-0000-0000',
+                              date: DateTime(2024, 1, 29, 11, 30),
+                            );
+                            final service = ReservationService();
+                            final data = await service.insertReservation(res);
+                            print('data:$data');
+                          } catch (e) {
+                            print('エラーが発生しました: $e');
+                          }
+                        },
+                        child: Text('予約'),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
-        ),
-        ref.watch(detailSelectStateProvider) ? ReservationSelectWidget() : Container(),
-      ],
+          ref.watch(detailSelectStateProvider) ? ReservationSelectWidget() : Container(),
+        ],
+      ),
     );
   }
 }
@@ -330,50 +329,3 @@ class DayContent extends HookConsumerWidget {
     );
   }
 }
-
-class DetailSelect extends HookConsumerWidget {
-  const DetailSelect({super.key});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final w = MediaQuery.of(context).size.width;
-    return Container(
-      width: w,
-      height: 200,
-      color: Colors.blue.withOpacity(0.5),
-    );
-  }
-}
-
-final timerProvider = StreamProvider<bool>((ref) {
-  Timer? timer;
-  final controller = StreamController<bool>();
-
-  void start() {
-    timer = Timer(Duration(seconds: 1), () {
-      controller.add(true);
-    });
-  }
-
-  void stop() => timer?.cancel();
-
-  return controller.stream;
-});
-
-// final timerStateNotifier = StateNotifierProvider<TimerNotifier, bool>(
-//   (ref) => TimerNotifier(),
-// );
-
-// class TimerNotifier extends StateNotifier<bool> {
-//   Timer? _timer;
-
-//   TimerNotifier() : super(false);
-
-//   void start() {
-//     _timer = Timer(Duration(seconds: 1), () {
-//       print('timer.........s');
-//     });
-//   }
-
-//   void cancel() => _timer?.cancel();
-// }

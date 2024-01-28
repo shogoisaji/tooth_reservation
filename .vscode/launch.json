@@ -1,6 +1,19 @@
 {
     "configurations": [
         {
+            "name": "Flutter",
+            "program": "lib/main.dart",
+            "request": "launch",
+            "type": "dart"
+        },
+        {
+            "name": "Flutter (web)",
+            "program": "lib/main.dart",
+            "request": "launch",
+            "type": "dart",
+            "args": ["--web"]
+        },
+        {
             "name": "Flutter (Chrome)",
             "program": "lib/main.dart",
             "deviceId": "chrome",

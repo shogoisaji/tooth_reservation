@@ -6,6 +6,42 @@ part of 'reservation_service.dart';
 // RiverpodGenerator
 // **************************************************************************
 
+String _$selectedReservationListHash() =>
+    r'da5b9733577565ed33a97f4e6c3c761dbaf5fcc0';
+
+/// See also [selectedReservationList].
+@ProviderFor(selectedReservationList)
+final selectedReservationListProvider =
+    AutoDisposeFutureProvider<List<Reservation>?>.internal(
+  selectedReservationList,
+  name: r'selectedReservationListProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$selectedReservationListHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+typedef SelectedReservationListRef
+    = AutoDisposeFutureProviderRef<List<Reservation>?>;
+String _$selectedReservationListDataHash() =>
+    r'ab6bf0e73717e007479377429ed9ae47be0dd1f3';
+
+/// See also [selectedReservationListData].
+@ProviderFor(selectedReservationListData)
+final selectedReservationListDataProvider =
+    AutoDisposeProvider<List<Reservation>?>.internal(
+  selectedReservationListData,
+  name: r'selectedReservationListDataProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$selectedReservationListDataHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+typedef SelectedReservationListDataRef
+    = AutoDisposeProviderRef<List<Reservation>?>;
 String _$reservationListStreamHash() =>
     r'2db33cd56bf58b6c01971a679de23b36ec8283fa';
 

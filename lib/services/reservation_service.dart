@@ -2,6 +2,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:tooth_reservation/models/reservation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:tooth_reservation/states/state.dart';
 
 part 'reservation_service.g.dart';
 
@@ -60,7 +61,8 @@ class ReservationService {
     }
   }
 
-  Future<List<Reservation>> getReservationList(DateTime date) async {
+// dateの予約を取得
+  Future<List<Reservation>?> getReservationList(DateTime date) async {
     try {
       DateTime dateOnly = DateTime(date.year, date.month, date.day);
       final List<Reservation> reservationList = [];
@@ -88,6 +90,24 @@ class ReservationService {
       return err.toString();
     }
   }
+}
+
+@riverpod
+Future<List<Reservation>?> selectedReservationList(SelectedReservationListRef ref) async {
+  ReservationService reservationService = ReservationService();
+  final selectedDate = ref.watch(selectedDateProvider);
+  final getList = await reservationService.getReservationList(selectedDate);
+  return getList;
+}
+
+@riverpod
+List<Reservation>? selectedReservationListData(SelectedReservationListDataRef ref) {
+  final selectedReservationList = ref.watch(selectedReservationListProvider);
+  return selectedReservationList.when(
+    loading: () => [],
+    error: (_, __) => [],
+    data: (d) => d,
+  );
 }
 
 @riverpod

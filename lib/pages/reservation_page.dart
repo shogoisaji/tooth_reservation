@@ -153,33 +153,33 @@ class ReservationPage extends HookConsumerWidget {
                               return index < getFirstWeekDay() ? Container() : DayContent(day!, color!);
                             }),
                       ),
-                      StreamBuilder(
-                        stream: service.getReservationListAllStream(),
-                        builder: (context, AsyncSnapshot<List<Reservation>> snapshot) {
-                          if (snapshot.hasError) {
-                            print('エラーが発生しました: ${snapshot.error}');
-                            return Text('エラーが発生しました: ${snapshot.error}');
-                          } else if (snapshot.hasData) {
-                            return Container(
-                              child: Column(
-                                children: [
-                                  ...snapshot.data!.take(5).map((e) {
-                                    DateFormat format = DateFormat('yyyy-MM-dd HH:mm');
-                                    return Container(
-                                        padding: const EdgeInsets.all(4.0), child: Text(format.format(e.date)));
-                                  }).toList(),
-                                ],
-                              ),
-                            );
-                          } else {
-                            return SizedBox(
-                              width: 60,
-                              height: 60,
-                              child: CircularProgressIndicator(),
-                            );
-                          }
-                        },
-                      ),
+                      // StreamBuilder(
+                      //   stream: service.getReservationListAllStream(),
+                      //   builder: (context, AsyncSnapshot<List<Reservation>> snapshot) {
+                      //     if (snapshot.hasError) {
+                      //       print('エラーが発生しました: ${snapshot.error}');
+                      //       return Text('エラーが発生しました: ${snapshot.error}');
+                      //     } else if (snapshot.hasData) {
+                      //       return Container(
+                      //         child: Column(
+                      //           children: [
+                      //             ...snapshot.data!.take(5).map((e) {
+                      //               DateFormat format = DateFormat('yyyy-MM-dd HH:mm');
+                      //               return Container(
+                      //                   padding: const EdgeInsets.all(4.0), child: Text(format.format(e.date)));
+                      //             }).toList(),
+                      //           ],
+                      //         ),
+                      //       );
+                      //     } else {
+                      //       return SizedBox(
+                      //         width: 60,
+                      //         height: 60,
+                      //         child: CircularProgressIndicator(),
+                      //       );
+                      //     }
+                      //   },
+                      // ),
                       SizedBox(
                         width: 60,
                         height: 60,

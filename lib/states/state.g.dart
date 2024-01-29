@@ -80,12 +80,12 @@ final selectedDateProvider = NotifierProvider<SelectedDate, DateTime>.internal(
 );
 
 typedef _$SelectedDate = Notifier<DateTime>;
-String _$businessHoursHash() => r'ba303d4cfddbf027ed693fec7e7651513e56b539';
+String _$businessHoursHash() => r'f02ac8aeb1542a3043de6bede7270f04ee76e1d5';
 
 /// See also [BusinessHours].
 @ProviderFor(BusinessHours)
 final businessHoursProvider =
-    NotifierProvider<BusinessHours, List<DateTime>>.internal(
+    AutoDisposeNotifierProvider<BusinessHours, List<DateTime>>.internal(
   BusinessHours.new,
   name: r'businessHoursProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
@@ -95,7 +95,7 @@ final businessHoursProvider =
   allTransitiveDependencies: null,
 );
 
-typedef _$BusinessHours = Notifier<List<DateTime>>;
+typedef _$BusinessHours = AutoDisposeNotifier<List<DateTime>>;
 String _$dragStateHash() => r'1e32b57e507aa4c7050643892541fd31e53da4af';
 
 /// See also [DragState].

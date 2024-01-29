@@ -134,22 +134,10 @@ class ReservationPage extends HookConsumerWidget {
                                 daysListGenerate(selectedMonth.value["year"]!, selectedMonth.value["month"]!).length +
                                     getFirstWeekDay(),
                             itemBuilder: (BuildContext context, int index) {
-                              // return index < getFirstWeekDay()
-                              //     ? Container()
-                              //     : DayContent(daysListGenerate(selectedMonth.value["year"]!, selectedMonth.value["month"]!)[
-                              //         index - getFirstWeekDay()]);
                               final DateTime? day = index < getFirstWeekDay()
                                   ? null
                                   : daysListGenerate(selectedMonth.value["year"]!, selectedMonth.value["month"]!)[
                                       index - getFirstWeekDay()];
-                              //   // 時間を無視して日付のみ
-                              //   final convertDate = DateTime(
-                              //     reservation.date.year,
-                              //     reservation.date.month,
-                              //     reservation.date.day,
-                              //   );
-                              //   return convertDate == day;
-                              // });
                               int count = reservationList.value.where((reservation) {
                                 // 時間を無視して日付のみ
                                 final convertDate = DateTime(
@@ -172,14 +160,16 @@ class ReservationPage extends HookConsumerWidget {
                             print('エラーが発生しました: ${snapshot.error}');
                             return Text('エラーが発生しました: ${snapshot.error}');
                           } else if (snapshot.hasData) {
-                            return Column(
-                              children: [
-                                ...snapshot.data!.take(3).map((e) {
-                                  DateFormat format = DateFormat('yyyy-MM-dd HH:mm');
-                                  return Container(
-                                      padding: const EdgeInsets.all(4.0), child: Text(format.format(e.date)));
-                                }).toList(),
-                              ],
+                            return Container(
+                              child: Column(
+                                children: [
+                                  ...snapshot.data!.take(5).map((e) {
+                                    DateFormat format = DateFormat('yyyy-MM-dd HH:mm');
+                                    return Container(
+                                        padding: const EdgeInsets.all(4.0), child: Text(format.format(e.date)));
+                                  }).toList(),
+                                ],
+                              ),
                             );
                           } else {
                             return SizedBox(
@@ -194,30 +184,6 @@ class ReservationPage extends HookConsumerWidget {
                         width: 60,
                         height: 60,
                       ),
-                      !isDragCompleted.value
-                          ? Draggable(
-                              data: 1,
-                              child: Container(
-                                width: 50,
-                                height: 50,
-                                color: Colors.blue,
-                              ),
-                              feedback: Container(
-                                width: 50,
-                                height: 50,
-                                color: Colors.blue,
-                              ),
-                              childWhenDragging: Container(
-                                width: 50,
-                                height: 50,
-                                color: Colors.transparent,
-                              ),
-                              onDragCompleted: () {
-                                print('drag completed');
-                                isDragCompleted.value = true;
-                              },
-                            )
-                          : Container(),
                       ElevatedButton(
                         onPressed: () {
                           isDragCompleted.value = false;
@@ -267,25 +233,13 @@ class DayContent extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isScale = useState<bool>(false);
+
     return CalenderScaleAnimation(
       isScale: isScale.value,
       child: GestureDetector(
         onTap: () {
           ref.read(selectedDateProvider.notifier).selectDate(day);
           ref.read(detailSelectStateProvider.notifier).show();
-          // showModalBottomSheet(
-          //   isScrollControlled: true,
-          //   enableDrag: false,
-          //   barrierColor: Colors.white.withOpacity(0.7),
-          //   backgroundColor: Colors.transparent,
-          //   context: context,
-          //   builder: (context) {
-          //     return Container(
-          //       height: h * 0.7,
-          //       color: Colors.blue[200],
-          //     );
-          //   },
-          // );
         },
         child: Container(
           margin: const EdgeInsets.all(4.0),
@@ -296,35 +250,6 @@ class DayContent extends HookConsumerWidget {
           ),
         ),
       ),
-      // DragTarget(
-      //     //   onAccept: (data) {
-      //     //   isScale.value = true;
-      //     //   Future.delayed(const Duration(milliseconds: 200), () {
-      //     //     isScale.value = false;
-      //     //   });
-      //     // },
-      //     builder: (context, candidateData, rejectedData) {
-      //   if (candidateData.isNotEmpty) {
-      //     // hover
-      //     Future.microtask(() {
-      //       isScale.value = true;
-      //     });
-      //   } else {
-      //     // exit
-      //     Future.microtask(() {
-      //       isScale.value = false;
-      //     });
-      //   }
-
-      //   return Container(
-      //     margin: const EdgeInsets.all(4.0),
-      //     decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), color: Colors.red[100]),
-      //     child: Padding(
-      //       padding: const EdgeInsets.all(8.0),
-      //       child: Text(day.day.toString()),
-      //     ),
-      //   );
-      // }),
     );
   }
 }

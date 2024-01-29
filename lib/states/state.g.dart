@@ -6,22 +6,7 @@ part of 'state.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$supabaseClientHash() => r'36e9cae00709545a85bfe4a5a2cb98d8686a01ea';
-
-/// See also [supabaseClient].
-@ProviderFor(supabaseClient)
-final supabaseClientProvider = AutoDisposeProvider<SupabaseClient>.internal(
-  supabaseClient,
-  name: r'supabaseClientProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-      ? null
-      : _$supabaseClientHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
-
-typedef SupabaseClientRef = AutoDisposeProviderRef<SupabaseClient>;
-String _$sessionResponseHash() => r'0905adf3ae598ff2aa1a02d8c94bb37e38fa780d';
+String _$sessionResponseHash() => r'77381aa9fffda8f50a8631d6760e5855d5ff4bc5';
 
 /// See also [sessionResponse].
 @ProviderFor(sessionResponse)
@@ -95,12 +80,12 @@ final selectedDateProvider = NotifierProvider<SelectedDate, DateTime>.internal(
 );
 
 typedef _$SelectedDate = Notifier<DateTime>;
-String _$businessHoursHash() => r'274c74f2d974d811f5c92e680bca15cab1b0479f';
+String _$businessHoursHash() => r'ba303d4cfddbf027ed693fec7e7651513e56b539';
 
 /// See also [BusinessHours].
 @ProviderFor(BusinessHours)
 final businessHoursProvider =
-    AutoDisposeNotifierProvider<BusinessHours, List<Map<String, int>>>.internal(
+    NotifierProvider<BusinessHours, List<DateTime>>.internal(
   BusinessHours.new,
   name: r'businessHoursProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
@@ -110,7 +95,7 @@ final businessHoursProvider =
   allTransitiveDependencies: null,
 );
 
-typedef _$BusinessHours = AutoDisposeNotifier<List<Map<String, int>>>;
+typedef _$BusinessHours = Notifier<List<DateTime>>;
 String _$dragStateHash() => r'1e32b57e507aa4c7050643892541fd31e53da4af';
 
 /// See also [DragState].

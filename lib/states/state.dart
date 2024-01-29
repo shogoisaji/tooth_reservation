@@ -4,17 +4,13 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:supabase/supabase.dart';
 import 'package:tooth_reservation/models/logged_in_user.dart';
+import 'package:tooth_reservation/models/settings.dart';
 
 part 'state.g.dart';
 
 @riverpod
-SupabaseClient supabaseClient(SupabaseClientRef ref) {
-  return Supabase.instance.client;
-}
-
-@riverpod
 Stream<Session?> sessionResponse(SessionResponseRef ref) {
-  final supabase = ref.watch(supabaseClientProvider);
+  final supabase = Supabase.instance.client;
   return supabase.auth.onAuthStateChange.map((event) => event.session);
 }
 
@@ -62,26 +58,49 @@ class SelectedDate extends _$SelectedDate {
 
 @riverpod
 class BusinessHours extends _$BusinessHours {
+  Settings settings = Settings();
   @override
-  List<Map<String, int>> build() {
-    List<Map<String, int>> businessHour = [
-      {"hour": 8, "minuit": 30},
-      {"hour": 17, "minuit": 30}
+  List<DateTime> build() {
+    List<DateTime> businessHour = [
+      DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day,
+          settings.businessHourList[0]['hour'] as int, settings.businessHourList[0]['minute'] as int),
+      DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day,
+          settings.businessHourList[1]['hour'] as int, settings.businessHourList[1]['minute'] as int)
     ];
 
-    List<Map<String, int>> timeSlots = [];
-    DateTime startTime = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day,
-        businessHour[0]["hour"]!, businessHour[0]["minuit"]!);
-    DateTime endTime = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day, businessHour[1]["hour"]!,
-        businessHour[1]["minuit"]!);
+    List<DateTime> timeSlots = [];
+    DateTime startTime = businessHour[0];
+    DateTime endTime = businessHour[1];
 
     for (var time = startTime; time.isBefore(endTime); time = time.add(Duration(minutes: 15))) {
-      timeSlots.add({"hour": time.hour, "minuit": time.minute});
+      timeSlots.add(time);
     }
 
     return timeSlots;
   }
 }
+// @riverpod
+// class BusinessHours extends _$BusinessHours {
+//   @override
+//   List<Map<String, int>> build() {
+//     List<Map<String, int>> businessHour = [
+//       {"hour": 8, "minuit": 30},
+//       {"hour": 17, "minuit": 30}
+//     ];
+
+//     List<Map<String, int>> timeSlots = [];
+//     DateTime startTime = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day,
+//         businessHour[0]["hour"]!, businessHour[0]["minuit"]!);
+//     DateTime endTime = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day, businessHour[1]["hour"]!,
+//         businessHour[1]["minuit"]!);
+
+//     for (var time = startTime; time.isBefore(endTime); time = time.add(Duration(minutes: 15))) {
+//       timeSlots.add({"hour": time.hour, "minuit": time.minute});
+//     }
+
+//     return timeSlots;
+//   }
+// }
 
 @riverpod
 class DragState extends _$DragState {

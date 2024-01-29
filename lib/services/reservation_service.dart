@@ -1,5 +1,9 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:tooth_reservation/models/reservation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+part 'reservation_service.g.dart';
 
 class ReservationService {
   final supabase = Supabase.instance.client;
@@ -58,10 +62,15 @@ class ReservationService {
 
   Future<List<Reservation>> getReservationList(DateTime date) async {
     try {
-      final response = await supabase.from('reservation').select().eq('reservation_date', date.toIso8601String());
+      DateTime dateOnly = DateTime(date.year, date.month, date.day);
       final List<Reservation> reservationList = [];
+      final response = await supabase.from('reservation').select();
       for (final reservation in response) {
-        reservationList.add(Reservation.fromJson(reservation));
+        final DateTime dbDate = DateTime.parse(reservation['reservation_date']);
+        final DateTime convertDate = DateTime(dbDate.year, dbDate.month, dbDate.day);
+        if (convertDate == dateOnly) {
+          reservationList.add(Reservation.fromJson(reservation));
+        }
       }
       return reservationList;
     } catch (err) {
@@ -79,4 +88,24 @@ class ReservationService {
       return err.toString();
     }
   }
+}
+
+@riverpod
+Stream<List<Reservation>?> reservationListStream(ReservationListStreamRef ref) {
+  final supabase = Supabase.instance.client;
+  return supabase
+      .from('reservation')
+      .stream(primaryKey: ['id'])
+      .map((maps) => maps.map((map) => Reservation.fromJson(map)).toList())
+      .handleError((_) => []);
+}
+
+@riverpod
+List<Reservation>? reservationList(ReservationListRef ref) {
+  final reservationList = ref.watch(reservationListStreamProvider);
+  return reservationList.when(
+    loading: () => [],
+    error: (_, __) => [],
+    data: (d) => d,
+  );
 }

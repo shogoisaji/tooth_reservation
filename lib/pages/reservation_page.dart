@@ -8,6 +8,7 @@ import 'package:tooth_reservation/animations/calender_scale_animation.dart';
 import 'package:tooth_reservation/models/reservation.dart';
 import 'package:tooth_reservation/services/reservation_service.dart';
 import 'package:tooth_reservation/states/state.dart';
+import 'package:tooth_reservation/theme/color_theme.dart';
 import 'package:tooth_reservation/widgets/loading.dart';
 import 'package:tooth_reservation/widgets/reservation_select_widget.dart';
 
@@ -61,228 +62,233 @@ class ReservationPage extends HookConsumerWidget {
       };
     }, []);
 
-    return Stack(
-      children: [
-        SafeArea(
-          child: Stack(
-            children: [
-              Center(
-                child: Container(
-                  width: _calenderWidth,
-                  // color: Colors.grey[100],
-                  child: Column(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          IconButton(
-                            icon: const Icon(Icons.arrow_back_ios),
-                            onPressed: () {
-                              int newMonth = selectedMonth.value["month"]! - 1;
-                              int newYear = selectedMonth.value["year"]!;
-                              if (newMonth == 0) {
-                                newMonth = 12;
-                                newYear = newYear - 1;
-                              }
-                              selectedMonth.value = {"year": newYear, "month": newMonth};
-                            },
-                          ),
-                          GestureDetector(
-                            onTap: () {
-                              selectedMonth.value = {"year": DateTime.now().year, "month": DateTime.now().month};
-                            },
-                            child: Text(
-                              "${selectedMonth.value["year"]}年${selectedMonth.value["month"]}月",
-                              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+    return Container(
+      // color: Color(MyColor.mint2),
+      child: Stack(
+        children: [
+          SafeArea(
+            child: Stack(
+              children: [
+                Center(
+                  child: Container(
+                    width: _calenderWidth,
+                    // color: Colors.grey[100],
+                    child: Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            IconButton(
+                              icon: const Icon(Icons.arrow_back_ios),
+                              onPressed: () {
+                                int newMonth = selectedMonth.value["month"]! - 1;
+                                int newYear = selectedMonth.value["year"]!;
+                                if (newMonth == 0) {
+                                  newMonth = 12;
+                                  newYear = newYear - 1;
+                                }
+                                selectedMonth.value = {"year": newYear, "month": newMonth};
+                              },
                             ),
-                          ),
-                          IconButton(
-                            icon: const Icon(Icons.arrow_forward_ios),
-                            onPressed: () {
-                              int newMonth = selectedMonth.value["month"]! + 1;
-                              int newYear = selectedMonth.value["year"]!;
-                              if (newMonth == 13) {
-                                newMonth = 1;
-                                newYear = newYear + 1;
-                              }
-                              selectedMonth.value = {"year": newYear, "month": newMonth};
-                            },
-                          ),
-                        ],
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          ...List.generate(
-                            7,
-                            (index) => Container(
-                              width: _calenderWidth / 7.5,
-                              padding: const EdgeInsets.all(2.0),
-                              child: Container(
-                                alignment: Alignment.center,
-                                padding: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 4.0),
-                                decoration:
-                                    BoxDecoration(borderRadius: BorderRadius.circular(6.0), color: Colors.blue[300]),
-                                child: Text(
-                                  [
-                                    "日",
-                                    "月",
-                                    "火",
-                                    "水",
-                                    "木",
-                                    "金",
-                                    "土",
-                                  ][index],
+                            GestureDetector(
+                              onTap: () {
+                                selectedMonth.value = {"year": DateTime.now().year, "month": DateTime.now().month};
+                              },
+                              child: Text(
+                                "${selectedMonth.value["year"]}年${selectedMonth.value["month"]}月",
+                                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.arrow_forward_ios),
+                              onPressed: () {
+                                int newMonth = selectedMonth.value["month"]! + 1;
+                                int newYear = selectedMonth.value["year"]!;
+                                if (newMonth == 13) {
+                                  newMonth = 1;
+                                  newYear = newYear + 1;
+                                }
+                                selectedMonth.value = {"year": newYear, "month": newMonth};
+                              },
+                            ),
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            ...List.generate(
+                              7,
+                              (index) => Container(
+                                width: _calenderWidth / 7.5,
+                                padding: const EdgeInsets.all(2.0),
+                                child: Container(
+                                  alignment: Alignment.center,
+                                  padding: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 4.0),
+                                  decoration:
+                                      BoxDecoration(borderRadius: BorderRadius.circular(6.0), color: Colors.blue[300]),
+                                  child: Text(
+                                    [
+                                      "日",
+                                      "月",
+                                      "火",
+                                      "水",
+                                      "木",
+                                      "金",
+                                      "土",
+                                    ][index],
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                        ],
-                      ),
-                      Expanded(
-                        child: GridView.builder(
-                            physics: const NeverScrollableScrollPhysics(),
-                            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 7,
-                              crossAxisSpacing: 0,
-                              mainAxisSpacing: 0,
-                            ),
-                            itemCount:
-                                daysListGenerate(selectedMonth.value["year"]!, selectedMonth.value["month"]!).length +
-                                    getFirstWeekDay(),
-                            itemBuilder: (BuildContext context, int index) {
-                              final DateTime? day = index < getFirstWeekDay()
-                                  ? null
-                                  : daysListGenerate(selectedMonth.value["year"]!, selectedMonth.value["month"]!)[
-                                      index - getFirstWeekDay()];
-                              int count = reservationList.value.where((reservation) {
-                                // 時間を無視して日付のみ
-                                final convertDate = DateTime(
-                                  reservation.date.year,
-                                  reservation.date.month,
-                                  reservation.date.day,
-                                );
-                                return convertDate == day;
-                              }).length;
-                              final Color? color = count == 0
-                                  ? Colors.blue[100]
-                                  : Colors.red[100 * (count + 1) > 900 ? 900 : 100 * (count + 1)];
-                              return index < getFirstWeekDay() ? Container() : DayContent(day!, color!);
-                            }),
-                      ),
-                      const TemporaryDateWidget(),
-                      const SizedBox(
-                        width: 60,
-                        height: 150,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              ref.watch(detailSelectStateProvider) ? const ReservationSelectWidget() : Container(),
-              true ? const Loading() : Container(),
-              // ref.watch(loadingStateProvider) ? const Loading() : Container(),
-              // Positioned(
-              //   bottom: 200,
-              //   child: ElevatedButton(
-              //     onPressed: () async {
-              //       try {
-              //         final String? userId = ref.read(loggedInUserProvider)?.userId;
-              //         final res = Reservation(
-              //           id: 1,
-              //           userId: userId,
-              //           userName: 'test',
-              //           email: 'email',
-              //           phoneNumber: '000-0000-0000',
-              //           date: DateTime(2024, 2, 8, 13, 00),
-              //         );
-              //         final service = ReservationService();
-              //         final data = await service.insertReservation(res);
-              //         print('data:$data');
-              //       } catch (e) {
-              //         print('エラーが発生しました: $e');
-              //       }
-              //     },
-              //     child: Text('予約'),
-              //   ),
-              // ),
-            ],
-          ),
-        ),
-        ref.watch(temporaryReservationDateProvider) == null
-            ? Positioned(
-                bottom: ref.watch(detailSelectStateProvider) ? 65 : 45,
-                right: MediaQuery.of(context).size.width * 0.5 - 48,
-                child: ref.watch(detailSelectStateProvider)
-                    ? Draggable(
-                        data: 1,
-                        onDragStarted: () {
-                          isDragging.value = true;
-                        },
-                        onDragEnd: (details) {
-                          isDragging.value = false;
-                        },
-                        feedback: Lottie.asset(
-                          'assets/lottie/hurt_tooth.json',
-                          width: 95,
+                          ],
                         ),
-                        childWhenDragging: Container(
-                          width: 50,
-                          height: 50,
-                          decoration: const BoxDecoration(
-                            color: Colors.transparent,
-                            shape: BoxShape.circle,
-                          ),
+                        Expanded(
+                          child: GridView.builder(
+                              physics: const NeverScrollableScrollPhysics(),
+                              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 7,
+                                crossAxisSpacing: 0,
+                                mainAxisSpacing: 0,
+                              ),
+                              itemCount:
+                                  daysListGenerate(selectedMonth.value["year"]!, selectedMonth.value["month"]!).length +
+                                      getFirstWeekDay(),
+                              itemBuilder: (BuildContext context, int index) {
+                                final DateTime? day = index < getFirstWeekDay()
+                                    ? null
+                                    : daysListGenerate(selectedMonth.value["year"]!, selectedMonth.value["month"]!)[
+                                        index - getFirstWeekDay()];
+                                int count = reservationList.value.where((reservation) {
+                                  // 時間を無視して日付のみ
+                                  final convertDate = DateTime(
+                                    reservation.date.year,
+                                    reservation.date.month,
+                                    reservation.date.day,
+                                  );
+                                  return convertDate == day;
+                                }).length;
+                                final Color? color = count == 0
+                                    ? Colors.blue[100]
+                                    : Colors.red[100 * (count + 1) > 900 ? 900 : 100 * (count + 1)];
+                                return index < getFirstWeekDay() ? Container() : DayContent(day!, color!);
+                              }),
                         ),
-                        onDragCompleted: () {
-                          print('drag completed');
-                        },
-                        child: Lottie.asset(
-                          'assets/lottie/hurt_tooth.json',
-                          width: 95,
+                        const TemporaryDateWidget(),
+                        const SizedBox(
+                          width: 60,
+                          height: 150,
                         ),
-                      )
-                    : Lottie.asset(
-                        'assets/lottie/hurt_tooth.json',
-                        width: 95,
-                      ),
-              )
-            : Positioned(
-                bottom: 120,
-                right: MediaQuery.of(context).size.width * 0.5 - 45,
-                child: ElevatedButton(
-                  onPressed: () {
-                    ref.read(temporaryReservationDateProvider.notifier).selectDate(null);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      side: const BorderSide(color: Colors.green, width: 3.0),
-                      borderRadius: BorderRadius.circular(12.0),
+                      ],
                     ),
-                    padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
                   ),
-                  child: Text('Reset',
-                      style: TextStyle(color: Colors.green[700], fontSize: 20, fontWeight: FontWeight.bold)),
                 ),
-              ),
-        Positioned(
-          bottom: -10,
-          child: IgnorePointer(
-              child:
-                  Image.asset('assets/images/gum.png', width: MediaQuery.of(context).size.width, fit: BoxFit.fitWidth)),
-        ),
-        ref.watch(detailSelectStateProvider) && !isDragging.value && ref.watch(temporaryReservationDateProvider) == null
-            ? Positioned(
-                bottom: 120,
-                right: MediaQuery.of(context).size.width * 0.5 - 10,
-                child: IgnorePointer(
-                    child: Lottie.asset(
-                  'assets/lottie/drag.json',
-                  width: 150,
-                )))
-            : Container(),
-      ],
+                ref.watch(detailSelectStateProvider) ? const ReservationSelectWidget() : Container(),
+                true ? const Loading() : Container(),
+                // ref.watch(loadingStateProvider) ? const Loading() : Container(),
+                // Positioned(
+                //   bottom: 200,
+                //   child: ElevatedButton(
+                //     onPressed: () async {
+                //       try {
+                //         final String? userId = ref.read(loggedInUserProvider)?.userId;
+                //         final res = Reservation(
+                //           id: 1,
+                //           userId: userId,
+                //           userName: 'test',
+                //           email: 'email',
+                //           phoneNumber: '000-0000-0000',
+                //           date: DateTime(2024, 2, 8, 13, 00),
+                //         );
+                //         final service = ReservationService();
+                //         final data = await service.insertReservation(res);
+                //         print('data:$data');
+                //       } catch (e) {
+                //         print('エラーが発生しました: $e');
+                //       }
+                //     },
+                //     child: Text('予約'),
+                //   ),
+                // ),
+              ],
+            ),
+          ),
+          ref.watch(temporaryReservationDateProvider) == null
+              ? Positioned(
+                  bottom: ref.watch(detailSelectStateProvider) ? 65 : 45,
+                  right: MediaQuery.of(context).size.width * 0.5 - 48,
+                  child: ref.watch(detailSelectStateProvider)
+                      ? Draggable(
+                          data: 1,
+                          onDragStarted: () {
+                            isDragging.value = true;
+                          },
+                          onDragEnd: (details) {
+                            isDragging.value = false;
+                          },
+                          feedback: Lottie.asset(
+                            'assets/lottie/hurt_tooth.json',
+                            width: 95,
+                          ),
+                          childWhenDragging: Container(
+                            width: 50,
+                            height: 50,
+                            decoration: const BoxDecoration(
+                              color: Colors.transparent,
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                          onDragCompleted: () {
+                            print('drag completed');
+                          },
+                          child: Lottie.asset(
+                            'assets/lottie/hurt_tooth.json',
+                            width: 95,
+                          ),
+                        )
+                      : Lottie.asset(
+                          'assets/lottie/hurt_tooth.json',
+                          width: 95,
+                        ),
+                )
+              : Positioned(
+                  bottom: 120,
+                  right: MediaQuery.of(context).size.width * 0.5 - 45,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      ref.read(temporaryReservationDateProvider.notifier).selectDate(null);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        side: const BorderSide(color: Colors.green, width: 3.0),
+                        borderRadius: BorderRadius.circular(12.0),
+                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                    ),
+                    child: Text('Reset',
+                        style: TextStyle(color: Colors.green[700], fontSize: 20, fontWeight: FontWeight.bold)),
+                  ),
+                ),
+          Positioned(
+            bottom: -10,
+            child: IgnorePointer(
+                child: Image.asset('assets/images/gum.png',
+                    width: MediaQuery.of(context).size.width, fit: BoxFit.fitWidth)),
+          ),
+          ref.watch(detailSelectStateProvider) &&
+                  !isDragging.value &&
+                  ref.watch(temporaryReservationDateProvider) == null
+              ? Positioned(
+                  bottom: 120,
+                  right: MediaQuery.of(context).size.width * 0.5 - 10,
+                  child: IgnorePointer(
+                      child: Lottie.asset(
+                    'assets/lottie/drag.json',
+                    width: 150,
+                  )))
+              : Container(),
+        ],
+      ),
     );
   }
 }

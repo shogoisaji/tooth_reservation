@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:lottie/lottie.dart';
 import 'package:tooth_reservation/models/reservation.dart';
 import 'package:tooth_reservation/services/reservation_service.dart';
 import 'package:tooth_reservation/states/state.dart';
@@ -124,7 +125,7 @@ class ReservationSelectWidget extends HookConsumerWidget {
                           return Positioned(
                               left: leftPosition,
                               top: topPosition,
-                              child: ScheduleContent(
+                              child: ScheduleTimeContent(
                                   index: index, w: contentWidth > 50 ? 50 : contentWidth, isReserved: isReserved));
                         }),
                       ],
@@ -135,49 +136,51 @@ class ReservationSelectWidget extends HookConsumerWidget {
             },
           ),
         ),
-        Align(
-          alignment: Alignment(0, 0.3),
-          child: Draggable(
-            data: 1,
-            child: Container(
-              width: 50,
-              height: 50,
-              decoration: BoxDecoration(
-                color: Colors.green[300],
-                shape: BoxShape.circle,
+        ref.watch(temporaryReservationDateProvider) == null
+            ? Align(
+                alignment: const Alignment(0, 0.3),
+                child: Draggable(
+                  data: 1,
+                  feedback: Lottie.asset(
+                    'assets/lottie/hurt_tooth.json',
+                    width: 90,
+                  ),
+                  childWhenDragging: Container(
+                    width: 50,
+                    height: 50,
+                    decoration: const BoxDecoration(
+                      color: Colors.transparent,
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                  onDragCompleted: () {
+                    print('drag completed');
+                  },
+                  child: Lottie.asset(
+                    'assets/lottie/hurt_tooth.json',
+                    width: 90,
+                  ),
+                ),
+              )
+            : Align(
+                alignment: const Alignment(0, 0.3),
+                child: ElevatedButton(
+                  onPressed: () {
+                    ref.read(temporaryReservationDateProvider.notifier).selectDate(null);
+                  },
+                  child: const Text('reset'),
+                ),
               ),
-            ),
-            feedback: Container(
-              width: 50,
-              height: 50,
-              decoration: BoxDecoration(
-                color: Colors.green[300],
-                shape: BoxShape.circle,
-              ),
-            ),
-            childWhenDragging: Container(
-              width: 50,
-              height: 50,
-              decoration: BoxDecoration(
-                color: Colors.transparent,
-                shape: BoxShape.circle,
-              ),
-            ),
-            onDragCompleted: () {
-              print('drag completed');
-            },
-          ),
-        )
       ],
     );
   }
 }
 
-class ScheduleContent extends HookConsumerWidget {
+class ScheduleTimeContent extends HookConsumerWidget {
   final int index;
   final double w;
   final bool isReserved;
-  const ScheduleContent({
+  const ScheduleTimeContent({
     super.key,
     required this.index,
     required this.w,
@@ -190,6 +193,35 @@ class ScheduleContent extends HookConsumerWidget {
     final animation = CurvedAnimation(parent: animationController, curve: Curves.elasticOut);
     final isScaleUp = useState(false);
     final isSelected = useState(false);
+
+    void selectCheck() {
+      final DateTime? selectedDate = ref.watch(temporaryReservationDateProvider);
+      final DateTime reservationDateTime = DateTime(
+          ref.watch(selectedDateProvider).year,
+          ref.watch(selectedDateProvider).month,
+          ref.watch(selectedDateProvider).day,
+          ref.watch(businessHoursProvider)[index].hour,
+          ref.watch(businessHoursProvider)[index].minute);
+      print('selectedDate:$selectedDate');
+      if (selectedDate == null) {
+        isSelected.value = false;
+        return;
+      }
+      if (selectedDate == reservationDateTime) {
+        isSelected.value = true;
+        return;
+      }
+      isSelected.value = false;
+    }
+
+    useEffect(() {
+      if (ref.watch(temporaryReservationDateProvider) != null) {
+        selectCheck();
+      } else {
+        isSelected.value = false;
+      }
+      return;
+    }, [ref.watch(temporaryReservationDateProvider)]);
 
     // 初回mount時は無視する
     final previousIsScaleUp = useState<bool>(isScaleUp.value);
@@ -211,8 +243,13 @@ class ScheduleContent extends HookConsumerWidget {
         builder: (context, child) {
           return DragTarget(
             onAccept: (data) {
-              isSelected.value = true;
-              print(data);
+              ref.read(temporaryReservationDateProvider.notifier).selectDate(DateTime(
+                  ref.watch(selectedDateProvider).year,
+                  ref.watch(selectedDateProvider).month,
+                  ref.watch(selectedDateProvider).day,
+                  ref.watch(businessHoursProvider)[index].hour,
+                  ref.watch(businessHoursProvider)[index].minute));
+              selectCheck();
             },
             builder: (context, candidateData, rejectedData) {
               if (candidateData.isNotEmpty) {

@@ -48,6 +48,14 @@ class DetailSelectState extends _$DetailSelectState {
   void hide() => state = false;
 }
 
+@riverpod
+class TemporaryReservationDate extends _$TemporaryReservationDate {
+  @override
+  DateTime? build() => null;
+
+  void selectDate(DateTime? date) => state = date;
+}
+
 @Riverpod(keepAlive: true)
 class SelectedDate extends _$SelectedDate {
   @override
@@ -79,28 +87,6 @@ class BusinessHours extends _$BusinessHours {
     return timeSlots;
   }
 }
-// @riverpod
-// class BusinessHours extends _$BusinessHours {
-//   @override
-//   List<Map<String, int>> build() {
-//     List<Map<String, int>> businessHour = [
-//       {"hour": 8, "minuit": 30},
-//       {"hour": 17, "minuit": 30}
-//     ];
-
-//     List<Map<String, int>> timeSlots = [];
-//     DateTime startTime = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day,
-//         businessHour[0]["hour"]!, businessHour[0]["minuit"]!);
-//     DateTime endTime = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day, businessHour[1]["hour"]!,
-//         businessHour[1]["minuit"]!);
-
-//     for (var time = startTime; time.isBefore(endTime); time = time.add(Duration(minutes: 15))) {
-//       timeSlots.add({"hour": time.hour, "minuit": time.minute});
-//     }
-
-//     return timeSlots;
-//   }
-// }
 
 @riverpod
 class DragState extends _$DragState {
@@ -115,29 +101,11 @@ class DragState extends _$DragState {
 }
 
 @riverpod
-class TimerNotifier extends _$TimerNotifier {
-  Timer? timer;
-
-  void start() {
-    state = true;
-
-    timer?.cancel();
-    timer = Timer(Duration(seconds: 1), () {
-      print('timer.........');
-      state = false; // state更新でUI再構築
-    });
-  }
-
-  void cancel() {
-    timer?.cancel();
-  }
-
+class LoadingState extends _$LoadingState {
   @override
-  bool build() {
-    return false;
-  }
-}
+  bool build() => false;
 
-// final timerProvider = StateNotifierProvider<TimerNotifier, bool>(
-//   (ref) => TimerNotifier()  
-// );
+  void start() => state = true;
+
+  void stop() => state = false;
+}

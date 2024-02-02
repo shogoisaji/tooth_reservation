@@ -66,6 +66,23 @@ final detailSelectStateProvider =
 );
 
 typedef _$DetailSelectState = AutoDisposeNotifier<bool>;
+String _$temporaryReservationDateHash() =>
+    r'801e786ab93f2d90f676edbed0128dd8a4f1d68f';
+
+/// See also [TemporaryReservationDate].
+@ProviderFor(TemporaryReservationDate)
+final temporaryReservationDateProvider =
+    AutoDisposeNotifierProvider<TemporaryReservationDate, DateTime?>.internal(
+  TemporaryReservationDate.new,
+  name: r'temporaryReservationDateProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$temporaryReservationDateHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+typedef _$TemporaryReservationDate = AutoDisposeNotifier<DateTime?>;
 String _$selectedDateHash() => r'bd5bfdc5c0202498b5cd755e663769f3ce1df8fa';
 
 /// See also [SelectedDate].
@@ -110,21 +127,20 @@ final dragStateProvider = AutoDisposeNotifierProvider<DragState, bool>.internal(
 );
 
 typedef _$DragState = AutoDisposeNotifier<bool>;
-String _$timerNotifierHash() => r'3ad6019d148cb60bf26f63839291d4b364a33cec';
+String _$loadingStateHash() => r'66d41ed271e83c2057621106883ad4e352cc8e3c';
 
-/// See also [TimerNotifier].
-@ProviderFor(TimerNotifier)
-final timerNotifierProvider =
-    AutoDisposeNotifierProvider<TimerNotifier, bool>.internal(
-  TimerNotifier.new,
-  name: r'timerNotifierProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-      ? null
-      : _$timerNotifierHash,
+/// See also [LoadingState].
+@ProviderFor(LoadingState)
+final loadingStateProvider =
+    AutoDisposeNotifierProvider<LoadingState, bool>.internal(
+  LoadingState.new,
+  name: r'loadingStateProvider',
+  debugGetCreateSourceHash:
+      const bool.fromEnvironment('dart.vm.product') ? null : _$loadingStateHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
-typedef _$TimerNotifier = AutoDisposeNotifier<bool>;
+typedef _$LoadingState = AutoDisposeNotifier<bool>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

@@ -28,6 +28,7 @@ class MyApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(routerProvider);
     return MaterialApp.router(
+      theme: ThemeData(fontFamily: 'M PLUS Rounded 1c'),
       debugShowCheckedModeBanner: false,
       routerConfig: router,
     );

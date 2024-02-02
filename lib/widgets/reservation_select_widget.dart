@@ -3,11 +3,11 @@ import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:lottie/lottie.dart';
 import 'package:tooth_reservation/models/reservation.dart';
 import 'package:tooth_reservation/models/settings.dart';
 import 'package:tooth_reservation/services/reservation_service.dart';
 import 'package:tooth_reservation/states/state.dart';
+import 'package:tooth_reservation/theme/color_theme.dart';
 
 class ReservationSelectWidget extends HookConsumerWidget {
   const ReservationSelectWidget({super.key});
@@ -20,7 +20,6 @@ class ReservationSelectWidget extends HookConsumerWidget {
     final animationController = useAnimationController(duration: const Duration(milliseconds: durationValue));
     final animation = CurvedAnimation(parent: animationController, curve: Curves.easeInOut);
     final w = MediaQuery.of(context).size.width;
-    final h = MediaQuery.of(context).size.height;
     final DateFormat format = DateFormat('yyyy.MM.dd');
     final selectedDate = ref.watch(selectedDateProvider);
     int hourCount() {
@@ -84,27 +83,27 @@ class ReservationSelectWidget extends HookConsumerWidget {
           ),
         ),
         Align(
-          alignment: const Alignment(0, -0.5),
+          alignment: const Alignment(0, -0.4),
           child: AnimatedBuilder(
             animation: animation,
             builder: (context, child) {
               return Opacity(
                 opacity: animation.value,
                 child: Transform.scale(
-                  scale: animation.value,
+                  scaleY: animation.value,
                   child: Container(
                     width: w,
                     height: upperOffset + lowerOffset + contentWidth * (60 / Settings.reservationRange),
                     decoration: BoxDecoration(
-                      color: Colors.blue[50],
+                      color: Color(MyColor.mint2),
                       border: Border(
-                        top: BorderSide(color: Colors.blue[900]!, width: 5),
-                        bottom: BorderSide(color: Colors.blue[900]!, width: 5),
+                        top: BorderSide(color: Colors.green[700]!.withOpacity(0.5), width: 3),
+                        bottom: BorderSide(color: Colors.green[700]!.withOpacity(0.5), width: 3),
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.4),
-                          spreadRadius: 2,
+                          color: Colors.black.withOpacity(0.3),
+                          spreadRadius: 3,
                           blurRadius: 5,
                           offset: const Offset(0, 2),
                         ),
@@ -117,12 +116,11 @@ class ReservationSelectWidget extends HookConsumerWidget {
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Text(format.format(selectedDate),
-                                style: TextStyle(color: Colors.blue[800]!, fontSize: 22, fontWeight: FontWeight.bold)),
+                                style: TextStyle(color: Colors.green[800]!, fontSize: 22, fontWeight: FontWeight.bold)),
                           ),
                         ),
                         ...List.generate(ref.watch(businessHoursProvider).length, (index) {
                           final bool isReserved = checkExistReservation(ref.watch(businessHoursProvider)[index]);
-
                           final int firstHour = ref.watch(businessHoursProvider)[0].hour;
                           final double leftPosition =
                               ((ref.watch(businessHoursProvider)[index].hour) - firstHour).toDouble() * contentWidth +
@@ -241,35 +239,39 @@ class ScheduleTimeContent extends HookConsumerWidget {
               }
               return Transform.translate(
                 offset: Offset(-w / 1.0 * animation.value, -w / 0.8 * animation.value),
-                child: Container(
-                  width: w * (1 + animation.value * 1.5),
-                  height: w * (1 + animation.value * 2.2),
-                  alignment: Alignment(0, -animation.value * 0.55),
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                        color: isReserved
-                            ? Colors.red
-                            : isSelected.value
-                                ? Colors.green
-                                : Colors.blue),
-                    shape: BoxShape.circle,
-                    color: isReserved
-                        ? Colors.red[200]
-                        : isSelected.value
-                            ? Colors.green[300]
-                            : Colors.blue[100],
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.2),
-                        spreadRadius: 1,
-                        blurRadius: 1,
-                        offset: const Offset(0, 1),
-                      ),
-                    ],
-                  ),
-                  child: Text(
-                    '${ref.watch(businessHoursProvider)[index].hour}:${ref.watch(businessHoursProvider)[index].minute == 0 ? '00' : ref.watch(businessHoursProvider)[index].minute}',
-                    style: TextStyle(fontSize: 12 * (1 + animation.value * 0.8)),
+                child: Transform.scale(
+                  scale: isSelected.value ? 1.2 : 1.0,
+                  child: Container(
+                    width: w * (1 + animation.value * 1.5),
+                    height: w * (1 + animation.value * 2.2),
+                    alignment: Alignment(0, -animation.value * 0.6),
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                          width: 1,
+                          color: isReserved
+                              ? Colors.red
+                              : isSelected.value
+                                  ? Colors.blue
+                                  : Colors.green[300]!),
+                      shape: BoxShape.circle,
+                      color: isReserved
+                          ? Colors.red[200]
+                          : isSelected.value
+                              ? Colors.blue[300]
+                              : Color(MyColor.mint4),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.2),
+                          spreadRadius: 1,
+                          blurRadius: 1,
+                          offset: const Offset(0, 1),
+                        ),
+                      ],
+                    ),
+                    child: Text(
+                      '${ref.watch(businessHoursProvider)[index].hour}:${ref.watch(businessHoursProvider)[index].minute == 0 ? '00' : ref.watch(businessHoursProvider)[index].minute}',
+                      style: TextStyle(fontSize: 12 * (1 + animation.value * 0.8)),
+                    ),
                   ),
                 ),
               );

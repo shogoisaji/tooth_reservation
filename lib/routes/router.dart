@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -8,6 +9,7 @@ import 'package:tooth_reservation/pages/login_page.dart';
 import 'package:tooth_reservation/pages/reservation_page.dart';
 import 'package:tooth_reservation/pages/signup_page.dart';
 import 'package:tooth_reservation/states/state.dart';
+import 'package:tooth_reservation/theme/color_theme.dart';
 
 part 'router.g.dart';
 
@@ -42,7 +44,14 @@ GoRouter router(RouterRef ref) {
           path: 'reservation',
           builder: (BuildContext context, GoRouterState state) {
             return Scaffold(
-              appBar: AppBar(title: Text('予約')),
+              appBar: AppBar(
+                title: Text('予約', style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold)),
+                backgroundColor: Color(MyColor.mint1),
+                leading: IconButton(
+                  icon: FaIcon(FontAwesomeIcons.chevronLeft, color: Colors.white),
+                  onPressed: () => GoRouter.of(context).pop(),
+                ),
+              ),
               body: const ReservationPage(),
             );
           },

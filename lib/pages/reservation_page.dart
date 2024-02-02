@@ -11,19 +11,25 @@ import 'package:tooth_reservation/states/state.dart';
 import 'package:tooth_reservation/theme/color_theme.dart';
 import 'package:tooth_reservation/widgets/loading.dart';
 import 'package:tooth_reservation/widgets/reservation_select_widget.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class ReservationPage extends HookConsumerWidget {
   const ReservationPage({super.key});
 
-  final double minWidth = 400;
+  final double minWidth = 350;
+  final double maxWidth = 500;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final w = MediaQuery.of(context).size.width;
     final isDragging = useState<bool>(false);
     final reservationList = useState<List<Reservation>>([]);
     final ReservationService service = ReservationService();
-    final _calenderWidth =
-        MediaQuery.of(context).size.width * 0.5 < minWidth ? minWidth : MediaQuery.of(context).size.width * 0.5;
+    final _calenderWidth = MediaQuery.of(context).size.width < minWidth
+        ? minWidth
+        : MediaQuery.of(context).size.width > maxWidth
+            ? maxWidth
+            : MediaQuery.of(context).size.width;
     final selectedMonth = useState<Map<String, int>>({"year": DateTime.now().year, "month": DateTime.now().month});
     int getFirstWeekDay() {
       return DateTime(selectedMonth.value["year"]!, selectedMonth.value["month"]!).weekday;
@@ -63,55 +69,104 @@ class ReservationPage extends HookConsumerWidget {
     }, []);
 
     return Container(
-      // color: Color(MyColor.mint2),
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment(-0.8, 0.3),
+          end: Alignment(0.3, 0.0),
+          colors: [
+            // Color(MyColor.mint1),
+            Color(MyColor.mint1),
+            Color(MyColor.mint2),
+          ],
+        ),
+      ),
       child: Stack(
         children: [
           SafeArea(
             child: Stack(
               children: [
+                Positioned(
+                  top: 10,
+                  left: -10,
+                  child: Container(
+                      width: 200,
+                      height: 200,
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.1),
+                        shape: BoxShape.circle,
+                        // border: Border.all(width: 2.0, color: Colors.green[300]!.withOpacity(0.5)),
+                      )),
+                ),
+                Positioned(
+                  top: 200,
+                  right: -30,
+                  child: Container(
+                      width: 300,
+                      height: 300,
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.2),
+                        shape: BoxShape.circle,
+                        // border: Border.all(width: 2.0, color: Colors.green[300]!.withOpacity(0.5)),
+                      )),
+                ),
+                Positioned(
+                  bottom: 80,
+                  left: 10,
+                  child: Container(
+                      width: 150,
+                      height: 150,
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.1),
+                        shape: BoxShape.circle,
+                        // border: Border.all(width: 2.0, color: Colors.green[300]!.withOpacity(0.5)),
+                      )),
+                ),
                 Center(
                   child: Container(
                     width: _calenderWidth,
                     // color: Colors.grey[100],
                     child: Column(
                       children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            IconButton(
-                              icon: const Icon(Icons.arrow_back_ios),
-                              onPressed: () {
-                                int newMonth = selectedMonth.value["month"]! - 1;
-                                int newYear = selectedMonth.value["year"]!;
-                                if (newMonth == 0) {
-                                  newMonth = 12;
-                                  newYear = newYear - 1;
-                                }
-                                selectedMonth.value = {"year": newYear, "month": newMonth};
-                              },
-                            ),
-                            GestureDetector(
-                              onTap: () {
-                                selectedMonth.value = {"year": DateTime.now().year, "month": DateTime.now().month};
-                              },
-                              child: Text(
-                                "${selectedMonth.value["year"]}年${selectedMonth.value["month"]}月",
-                                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 6.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              IconButton(
+                                icon: FaIcon(FontAwesomeIcons.circleChevronLeft, color: Colors.green[900]),
+                                onPressed: () {
+                                  int newMonth = selectedMonth.value["month"]! - 1;
+                                  int newYear = selectedMonth.value["year"]!;
+                                  if (newMonth == 0) {
+                                    newMonth = 12;
+                                    newYear = newYear - 1;
+                                  }
+                                  selectedMonth.value = {"year": newYear, "month": newMonth};
+                                },
                               ),
-                            ),
-                            IconButton(
-                              icon: const Icon(Icons.arrow_forward_ios),
-                              onPressed: () {
-                                int newMonth = selectedMonth.value["month"]! + 1;
-                                int newYear = selectedMonth.value["year"]!;
-                                if (newMonth == 13) {
-                                  newMonth = 1;
-                                  newYear = newYear + 1;
-                                }
-                                selectedMonth.value = {"year": newYear, "month": newMonth};
-                              },
-                            ),
-                          ],
+                              GestureDetector(
+                                onTap: () {
+                                  selectedMonth.value = {"year": DateTime.now().year, "month": DateTime.now().month};
+                                },
+                                child: Text(
+                                  "${selectedMonth.value["year"]}年${selectedMonth.value["month"]}月",
+                                  style: TextStyle(color: Colors.green[900], fontSize: 20, fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                              IconButton(
+                                icon: FaIcon(FontAwesomeIcons.circleChevronRight, color: Colors.green[900]),
+                                onPressed: () {
+                                  int newMonth = selectedMonth.value["month"]! + 1;
+                                  int newYear = selectedMonth.value["year"]!;
+                                  if (newMonth == 13) {
+                                    newMonth = 1;
+                                    newYear = newYear + 1;
+                                  }
+                                  selectedMonth.value = {"year": newYear, "month": newMonth};
+                                },
+                              ),
+                            ],
+                          ),
                         ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -123,19 +178,29 @@ class ReservationPage extends HookConsumerWidget {
                                 padding: const EdgeInsets.all(2.0),
                                 child: Container(
                                   alignment: Alignment.center,
-                                  padding: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 4.0),
-                                  decoration:
-                                      BoxDecoration(borderRadius: BorderRadius.circular(6.0), color: Colors.blue[300]),
-                                  child: Text(
-                                    [
-                                      "日",
-                                      "月",
-                                      "火",
-                                      "水",
-                                      "木",
-                                      "金",
-                                      "土",
-                                    ][index],
+                                  padding: const EdgeInsets.all(2.0),
+                                  decoration: BoxDecoration(
+                                      border: Border.all(width: 1.5, color: Colors.white),
+                                      borderRadius: BorderRadius.circular(8.0),
+                                      color: Colors.transparent),
+                                  child: Container(
+                                    width: double.infinity,
+                                    alignment: Alignment.center,
+                                    decoration:
+                                        BoxDecoration(borderRadius: BorderRadius.circular(5.0), color: Colors.white),
+                                    padding: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 4.0),
+                                    child: Text(
+                                        [
+                                          "日",
+                                          "月",
+                                          "火",
+                                          "水",
+                                          "木",
+                                          "金",
+                                          "土",
+                                        ][index],
+                                        style: TextStyle(
+                                            color: Colors.green[900], fontWeight: FontWeight.bold, fontSize: 16)),
                                   ),
                                 ),
                               ),
@@ -168,7 +233,7 @@ class ReservationPage extends HookConsumerWidget {
                                   return convertDate == day;
                                 }).length;
                                 final Color? color = count == 0
-                                    ? Colors.blue[100]
+                                    ? Colors.white
                                     : Colors.red[100 * (count + 1) > 900 ? 900 : 100 * (count + 1)];
                                 return index < getFirstWeekDay() ? Container() : DayContent(day!, color!);
                               }),
@@ -176,7 +241,7 @@ class ReservationPage extends HookConsumerWidget {
                         const TemporaryDateWidget(),
                         const SizedBox(
                           width: 60,
-                          height: 150,
+                          height: 165,
                         ),
                       ],
                     ),
@@ -215,7 +280,7 @@ class ReservationPage extends HookConsumerWidget {
           ref.watch(temporaryReservationDateProvider) == null
               ? Positioned(
                   bottom: ref.watch(detailSelectStateProvider) ? 65 : 45,
-                  right: MediaQuery.of(context).size.width * 0.5 - 48,
+                  right: MediaQuery.of(context).size.width * 0.5 - 50,
                   child: ref.watch(detailSelectStateProvider)
                       ? Draggable(
                           data: 1,
@@ -251,7 +316,7 @@ class ReservationPage extends HookConsumerWidget {
                         ),
                 )
               : Positioned(
-                  bottom: 120,
+                  bottom: 140,
                   right: MediaQuery.of(context).size.width * 0.5 - 45,
                   child: ElevatedButton(
                     onPressed: () {
@@ -259,6 +324,7 @@ class ReservationPage extends HookConsumerWidget {
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.white,
+                      elevation: 5,
                       shape: RoundedRectangleBorder(
                         side: const BorderSide(color: Colors.green, width: 3.0),
                         borderRadius: BorderRadius.circular(12.0),
@@ -271,19 +337,56 @@ class ReservationPage extends HookConsumerWidget {
                 ),
           Positioned(
             bottom: -10,
-            child: IgnorePointer(
-                child: Image.asset('assets/images/gum.png',
-                    width: MediaQuery.of(context).size.width, fit: BoxFit.fitWidth)),
+            child: SizedBox(
+              width: MediaQuery.of(context).size.width,
+              height: 135,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Expanded(
+                    child: Container(
+                      height: 97,
+                      decoration: const BoxDecoration(
+                        color: Color(0xffF9717C),
+                        border: Border(
+                          top: BorderSide(
+                            color: Colors.black,
+                            width: 1.0,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  IgnorePointer(
+                      child: Image.asset('assets/images/gum.png',
+                          height: 135, width: w < 400 ? w : 400, fit: BoxFit.fill)),
+                  Expanded(
+                    child: Container(
+                      height: 97,
+                      decoration: const BoxDecoration(
+                        color: Color(0xffF9717C),
+                        border: Border(
+                          top: BorderSide(
+                            color: Colors.black,
+                            width: 1.0,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
           ref.watch(detailSelectStateProvider) &&
                   !isDragging.value &&
                   ref.watch(temporaryReservationDateProvider) == null
               ? Positioned(
-                  bottom: 120,
-                  right: MediaQuery.of(context).size.width * 0.5 - 10,
+                  bottom: 60,
+                  right: MediaQuery.of(context).size.width * 0.5 - 75,
                   child: IgnorePointer(
                       child: Lottie.asset(
-                    'assets/lottie/drag.json',
+                    'assets/lottie/pickUp.json',
                     width: 150,
                   )))
               : Container(),
@@ -349,33 +452,36 @@ class DayContent extends HookConsumerWidget {
           key: key,
           margin: const EdgeInsets.all(4.0),
           decoration: BoxDecoration(
-              border: isReserved.value ? Border.all(width: 2.0, color: Colors.green) : null,
+              border: Border.all(width: 4.0, color: isReserved.value ? Colors.blue[800]! : color),
               borderRadius: BorderRadius.circular(10.0),
-              color: color,
+              color: Colors.white,
               boxShadow: [
                 BoxShadow(
-                  color: isReserved.value ? Colors.green.withOpacity(0.5) : Colors.transparent,
+                  color: isReserved.value ? Colors.blue[800]!.withOpacity(0.5) : Colors.transparent,
                   spreadRadius: 2,
-                  blurRadius: 2,
+                  blurRadius: 3,
                   offset: const Offset(0, 0),
                 ),
               ]),
           child: Stack(
             children: [
               Positioned(
-                bottom: 0,
-                right: 2,
+                bottom: -5,
+                right: -2,
                 child: isReserved.value
-                    ? Image.asset('assets/images/reservedTooth.png',
-                        width: containerSize.value.width * 0.6,
-                        height: containerSize.value.width * 0.7,
-                        fit: BoxFit.fill)
+                    ? Transform.rotate(
+                        angle: 0.2,
+                        child: Image.asset('assets/images/reservedTooth.png',
+                            width: containerSize.value.width * 0.7,
+                            height: containerSize.value.width * 0.8,
+                            fit: BoxFit.fill),
+                      )
                     : Container(),
               ),
               Padding(
                 padding: isReserved.value
-                    ? const EdgeInsets.only(top: 0.0, left: 2.0)
-                    : const EdgeInsets.only(top: 2.0, left: 4.0),
+                    ? const EdgeInsets.only(top: 0.0, left: 0.0)
+                    : const EdgeInsets.only(top: 0.0, left: 1.0),
                 child: Text(day.day.toString()),
               ),
             ],
@@ -392,6 +498,7 @@ class TemporaryDateWidget extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final tempoDay = ref.watch(temporaryReservationDateProvider);
+    final w = MediaQuery.of(context).size.width;
 
     String formatDate(DateTime date) {
       return "${date.year}/${date.month}/${date.day} ${date.hour}:${date.minute}";
@@ -404,8 +511,21 @@ class TemporaryDateWidget extends HookConsumerWidget {
         margin: const EdgeInsets.symmetric(horizontal: 8.0),
         padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12.0),
-          color: Colors.green[200],
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(30.0),
+            topRight: Radius.circular(12.0),
+            bottomLeft: Radius.circular(12.0),
+            bottomRight: Radius.circular(30.0),
+          ),
+          color: const Color(MyColor.mint3),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.2),
+              spreadRadius: 2,
+              blurRadius: 3,
+              offset: const Offset(0, 3),
+            ),
+          ],
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -416,17 +536,34 @@ class TemporaryDateWidget extends HookConsumerWidget {
                   Text('選択中の予約日時',
                       style: TextStyle(color: Colors.green[900], fontWeight: FontWeight.normal, fontSize: 20)),
                   Container(
-                      width: double.infinity,
-                      margin: const EdgeInsets.only(top: 4.0),
-                      padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8.0),
-                        color: Colors.white,
-                      ),
-                      child: Center(
-                        child: Text(formattedDate,
-                            style: TextStyle(color: Colors.green[800], fontWeight: FontWeight.bold, fontSize: 24)),
-                      )),
+                    // width: double.infinity,
+                    margin: const EdgeInsets.only(top: 4.0),
+                    padding: const EdgeInsets.all(4.0),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8.0),
+                      color: Colors.black.withOpacity(0.1),
+                    ),
+                    child: Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(6.0),
+                          color: Colors.white,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.white.withOpacity(0.9),
+                              spreadRadius: 2,
+                              blurRadius: 1,
+                              offset: const Offset(0, 0.5),
+                            ),
+                          ],
+                        ),
+                        child: Center(
+                          child: Text(formattedDate,
+                              style: TextStyle(
+                                  color: Colors.green[800], fontWeight: FontWeight.bold, fontSize: w > 700 ? 24 : 20)),
+                        )),
+                  ),
                 ],
               ),
             ),
@@ -438,7 +575,7 @@ class TemporaryDateWidget extends HookConsumerWidget {
                 showDialog(
                   context: context,
                   builder: (BuildContext context) {
-                    return CustomDialog(tempoDay!);
+                    return CustomDialog(tempoDay);
                   },
                 );
               },
@@ -447,7 +584,7 @@ class TemporaryDateWidget extends HookConsumerWidget {
                 padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 12.0),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(8.0),
-                  color: tempoDay != null ? Colors.green[600] : Colors.grey[500],
+                  color: tempoDay != null ? Color(MyColor.green) : Colors.grey[500],
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black.withOpacity(0.2),
@@ -488,9 +625,25 @@ class CustomDialog extends HookConsumerWidget {
           child: Text('キャンセル', style: TextStyle(color: Colors.green[700], fontWeight: FontWeight.bold, fontSize: 16)),
         ),
         ElevatedButton(
-          onPressed: () {
+          onPressed: () async {
             Navigator.of(context).pop();
-            print('予約');
+            try {
+              final String? userId = ref.read(loggedInUserProvider)?.userId;
+              final res = Reservation(
+                id: 1,
+                userId: userId,
+                userName: 'test',
+                email: 'email',
+                phoneNumber: '000-0000-0000',
+                date: date,
+              );
+              final service = ReservationService();
+              final data = await service.insertReservation(res);
+              ref.read(temporaryReservationDateProvider.notifier).selectDate(null);
+              print('data:$data');
+            } catch (e) {
+              print('エラーが発生しました: $e');
+            }
           },
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.green[600],

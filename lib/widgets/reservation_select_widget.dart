@@ -1,5 +1,3 @@
-import 'dart:math' as math;
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -7,6 +5,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 import 'package:tooth_reservation/models/reservation.dart';
+import 'package:tooth_reservation/models/settings.dart';
 import 'package:tooth_reservation/services/reservation_service.dart';
 import 'package:tooth_reservation/states/state.dart';
 
@@ -15,6 +14,8 @@ class ReservationSelectWidget extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    const upperOffset = 50.0;
+    const lowerOffset = 25.0;
     const durationValue = 300;
     final animationController = useAnimationController(duration: const Duration(milliseconds: durationValue));
     final animation = CurvedAnimation(parent: animationController, curve: Curves.easeInOut);
@@ -22,6 +23,21 @@ class ReservationSelectWidget extends HookConsumerWidget {
     final h = MediaQuery.of(context).size.height;
     final DateFormat format = DateFormat('yyyy.MM.dd');
     final selectedDate = ref.watch(selectedDateProvider);
+    int hourCount() {
+      int count = 0;
+      int current = 0;
+      for (int i = 0; i < ref.watch(businessHoursProvider).length; i++) {
+        if (ref.watch(businessHoursProvider)[i].hour != current) {
+          count++;
+          current = ref.watch(businessHoursProvider)[i].hour;
+        }
+      }
+      return count;
+    }
+
+    int rowCount = hourCount();
+    const offset = 30;
+    double contentWidth = (w - offset) / rowCount;
 
     bool checkExistReservation(DateTime time) {
       DateTime convertDate = DateTime(selectedDate.year, selectedDate.month, selectedDate.day, time.hour, time.minute);
@@ -35,18 +51,6 @@ class ReservationSelectWidget extends HookConsumerWidget {
         }
       }
       return false;
-    }
-
-    int hourCount() {
-      int count = 0;
-      int current = 0;
-      for (int i = 0; i < ref.watch(businessHoursProvider).length; i++) {
-        if (ref.watch(businessHoursProvider)[i].hour != current) {
-          count++;
-          current = ref.watch(businessHoursProvider)[i].hour;
-        }
-      }
-      return count;
     }
 
     useEffect(() {
@@ -90,12 +94,16 @@ class ReservationSelectWidget extends HookConsumerWidget {
                   scale: animation.value,
                   child: Container(
                     width: w,
-                    height: w * 0.6,
+                    height: upperOffset + lowerOffset + contentWidth * (60 / Settings.reservationRange),
                     decoration: BoxDecoration(
                       color: Colors.blue[50],
+                      border: Border(
+                        top: BorderSide(color: Colors.blue[900]!, width: 5),
+                        bottom: BorderSide(color: Colors.blue[900]!, width: 5),
+                      ),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.2),
+                          color: Colors.black.withOpacity(0.4),
                           spreadRadius: 2,
                           blurRadius: 5,
                           offset: const Offset(0, 2),
@@ -108,20 +116,21 @@ class ReservationSelectWidget extends HookConsumerWidget {
                           alignment: Alignment.topCenter,
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: Text(format.format(selectedDate), style: const TextStyle(fontSize: 20)),
+                            child: Text(format.format(selectedDate),
+                                style: TextStyle(color: Colors.blue[800]!, fontSize: 22, fontWeight: FontWeight.bold)),
                           ),
                         ),
                         ...List.generate(ref.watch(businessHoursProvider).length, (index) {
                           final bool isReserved = checkExistReservation(ref.watch(businessHoursProvider)[index]);
-                          int rowCount = hourCount();
-                          const offset = 30;
-                          double contentWidth = (w - offset) / rowCount;
+
                           final int firstHour = ref.watch(businessHoursProvider)[0].hour;
                           final double leftPosition =
                               ((ref.watch(businessHoursProvider)[index].hour) - firstHour).toDouble() * contentWidth +
                                   offset / 2;
-                          final double topPosition =
-                              (ref.watch(businessHoursProvider)[index].minute).toDouble() * 3 + 60;
+                          final double topPosition = (ref.watch(businessHoursProvider)[index].minute).toDouble() /
+                                  Settings.reservationRange *
+                                  contentWidth +
+                              upperOffset;
                           return Positioned(
                               left: leftPosition,
                               top: topPosition,
@@ -136,41 +145,6 @@ class ReservationSelectWidget extends HookConsumerWidget {
             },
           ),
         ),
-        ref.watch(temporaryReservationDateProvider) == null
-            ? Align(
-                alignment: const Alignment(0, 0.3),
-                child: Draggable(
-                  data: 1,
-                  feedback: Lottie.asset(
-                    'assets/lottie/hurt_tooth.json',
-                    width: 90,
-                  ),
-                  childWhenDragging: Container(
-                    width: 50,
-                    height: 50,
-                    decoration: const BoxDecoration(
-                      color: Colors.transparent,
-                      shape: BoxShape.circle,
-                    ),
-                  ),
-                  onDragCompleted: () {
-                    print('drag completed');
-                  },
-                  child: Lottie.asset(
-                    'assets/lottie/hurt_tooth.json',
-                    width: 90,
-                  ),
-                ),
-              )
-            : Align(
-                alignment: const Alignment(0, 0.3),
-                child: ElevatedButton(
-                  onPressed: () {
-                    ref.read(temporaryReservationDateProvider.notifier).selectDate(null);
-                  },
-                  child: const Text('reset'),
-                ),
-              ),
       ],
     );
   }
@@ -286,10 +260,10 @@ class ScheduleTimeContent extends HookConsumerWidget {
                             : Colors.blue[100],
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.grey.withOpacity(0.5),
+                        color: Colors.black.withOpacity(0.2),
                         spreadRadius: 1,
-                        blurRadius: 5,
-                        offset: Offset(0, 0),
+                        blurRadius: 1,
+                        offset: const Offset(0, 1),
                       ),
                     ],
                   ),

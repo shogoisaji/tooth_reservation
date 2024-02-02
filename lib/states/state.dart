@@ -66,21 +66,20 @@ class SelectedDate extends _$SelectedDate {
 
 @riverpod
 class BusinessHours extends _$BusinessHours {
-  Settings settings = Settings();
   @override
   List<DateTime> build() {
     List<DateTime> businessHour = [
       DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day,
-          settings.businessHourList[0]['hour'] as int, settings.businessHourList[0]['minute'] as int),
+          Settings.businessHourList[0]['hour'] as int, Settings.businessHourList[0]['minute'] as int),
       DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day,
-          settings.businessHourList[1]['hour'] as int, settings.businessHourList[1]['minute'] as int)
+          Settings.businessHourList[1]['hour'] as int, Settings.businessHourList[1]['minute'] as int)
     ];
 
     List<DateTime> timeSlots = [];
     DateTime startTime = businessHour[0];
     DateTime endTime = businessHour[1];
 
-    for (var time = startTime; time.isBefore(endTime); time = time.add(Duration(minutes: 15))) {
+    for (var time = startTime; time.isBefore(endTime); time = time.add(Duration(minutes: Settings.reservationRange))) {
       timeSlots.add(time);
     }
 
@@ -105,7 +104,7 @@ class LoadingState extends _$LoadingState {
   @override
   bool build() => false;
 
-  void start() => state = true;
+  void show() => state = true;
 
-  void stop() => state = false;
+  void hide() => state = false;
 }

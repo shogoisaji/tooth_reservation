@@ -10,7 +10,7 @@ class Loading extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final animationController = useAnimationController(duration: const Duration(milliseconds: 1500));
-    final opacityController = useAnimationController(duration: const Duration(milliseconds: 600));
+    final opacityController = useAnimationController(duration: const Duration(milliseconds: 500));
     final w = MediaQuery.of(context).size.width;
     final isLoading = ref.watch(loadingStateProvider);
     useEffect(() {

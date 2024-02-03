@@ -6,6 +6,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:tooth_reservation/pages/account_page.dart';
 import 'package:tooth_reservation/pages/home_page.dart';
 import 'package:tooth_reservation/pages/login_page.dart';
+import 'package:tooth_reservation/pages/reservation_form.dart';
 import 'package:tooth_reservation/pages/reservation_page.dart';
 import 'package:tooth_reservation/pages/signup_page.dart';
 import 'package:tooth_reservation/states/state.dart';
@@ -15,7 +16,7 @@ part 'router.g.dart';
 
 @riverpod
 GoRouter router(RouterRef ref) {
-  final bool _isLogin = ref.watch(loggedInUserDataProvider) != null;
+  final bool _isLoggedIn = ref.watch(loggedInUserDataProvider) != null;
   final routes = [
     GoRoute(
       path: '/login',
@@ -27,7 +28,7 @@ GoRouter router(RouterRef ref) {
           path: 'signup',
           builder: (BuildContext context, GoRouterState state) {
             return Scaffold(
-              appBar: AppBar(title: Text('サインアップ')),
+              appBar: AppBar(title: const Text('サインアップ')),
               body: const SignUpPage(),
             );
           },
@@ -45,22 +46,47 @@ GoRouter router(RouterRef ref) {
           builder: (BuildContext context, GoRouterState state) {
             return Scaffold(
               appBar: AppBar(
-                title: Text('予約', style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold)),
-                backgroundColor: Color(MyColor.mint1),
+                title:
+                    const Text('予約', style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold)),
+                backgroundColor: const Color(MyColor.mint1),
                 leading: IconButton(
-                  icon: FaIcon(FontAwesomeIcons.chevronLeft, color: Colors.white),
+                  icon: const FaIcon(FontAwesomeIcons.chevronLeft, color: Colors.white),
                   onPressed: () => GoRouter.of(context).pop(),
                 ),
               ),
               body: const ReservationPage(),
             );
           },
+          routes: [
+            GoRoute(
+              path: 'reservation_form',
+              builder: (BuildContext context, GoRouterState state) {
+                return Scaffold(
+                  appBar: AppBar(
+                      title: const Text('予約フォーム',
+                          style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold)),
+                      backgroundColor: const Color(MyColor.mint1),
+                      leading: IconButton(
+                        icon: const FaIcon(FontAwesomeIcons.chevronLeft, color: Colors.white),
+                        onPressed: () => GoRouter.of(context).pop(),
+                      )),
+                  body: const ReservationFormPage(),
+                );
+              },
+            ),
+          ],
         ),
         GoRoute(
           path: 'account',
           builder: (BuildContext context, GoRouterState state) {
             return Scaffold(
-              appBar: AppBar(title: Text('Account')),
+              appBar: AppBar(
+                title: const Text('アカウント'),
+                leading: IconButton(
+                  icon: const FaIcon(FontAwesomeIcons.chevronLeft, color: Colors.white),
+                  onPressed: () => GoRouter.of(context).pop(),
+                ),
+              ),
               body: const AccountPage(),
             );
           },
@@ -70,7 +96,7 @@ GoRouter router(RouterRef ref) {
   ];
 
   return GoRouter(
-    initialLocation: _isLogin ? '/home' : '/login',
+    initialLocation: _isLoggedIn ? '/home' : '/login',
     routes: routes,
   );
 }

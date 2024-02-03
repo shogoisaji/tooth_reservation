@@ -56,7 +56,7 @@ class ReservationSelectWidget extends HookConsumerWidget {
       if (ref.watch(detailSelectStateProvider)) {
         animationController.forward(from: 0.0);
       } else {
-        animationController.reverse(from: 0.5);
+        animationController.reverse(from: 0.0);
       }
       return;
     }, [ref.watch(detailSelectStateProvider)]);
@@ -88,7 +88,7 @@ class ReservationSelectWidget extends HookConsumerWidget {
             animation: animation,
             builder: (context, child) {
               return Opacity(
-                opacity: animation.value,
+                opacity: animation.value < 0.5 ? 0 : animation.value,
                 child: Transform.scale(
                   scaleY: animation.value,
                   child: Container(

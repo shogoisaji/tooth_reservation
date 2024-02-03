@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:lottie/lottie.dart';
 import 'package:tooth_reservation/animations/calender_scale_animation.dart';
@@ -17,7 +18,7 @@ class ReservationPage extends HookConsumerWidget {
   const ReservationPage({super.key});
 
   final double minWidth = 350;
-  final double maxWidth = 500;
+  final double maxWidth = 450;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -501,7 +502,7 @@ class TemporaryDateWidget extends HookConsumerWidget {
     final w = MediaQuery.of(context).size.width;
 
     String formatDate(DateTime date) {
-      return "${date.year}/${date.month}/${date.day} ${date.hour}:${date.minute}";
+      return "${date.year}/${date.month}/${date.day} ${date.hour}:${date.minute == 0 ? '00' : date.minute}";
     }
 
     final String formattedDate = tempoDay != null ? formatDate(tempoDay) : "";
@@ -584,7 +585,7 @@ class TemporaryDateWidget extends HookConsumerWidget {
                 padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 12.0),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(8.0),
-                  color: tempoDay != null ? Color(MyColor.green) : Colors.grey[500],
+                  color: tempoDay != null ? const Color(MyColor.green) : Colors.grey[500],
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black.withOpacity(0.2),
@@ -610,11 +611,15 @@ class CustomDialog extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     String formatDate(DateTime date) {
-      return "${date.year}/${date.month}/${date.day} ${date.hour}:${date.minute}";
+      return "${date.year}/${date.month}/${date.day} ${date.hour}:${date.minute == 0 ? '00' : date.minute}";
     }
 
     final String formattedDate = formatDate(date);
+    final isLoggedIn = ref.watch(loggedInUserProvider) != null;
     return AlertDialog(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12.0),
+      ),
       title: const Text('予約確認'),
       content: Text('$formattedDate\nで予約しますか？', style: const TextStyle(fontSize: 20)),
       actions: [
@@ -626,6 +631,10 @@ class CustomDialog extends HookConsumerWidget {
         ),
         ElevatedButton(
           onPressed: () async {
+            if (!isLoggedIn) {
+              context.go('/home/reservation/reservation_form');
+              return;
+            }
             Navigator.of(context).pop();
             try {
               final String? userId = ref.read(loggedInUserProvider)?.userId;
@@ -648,7 +657,8 @@ class CustomDialog extends HookConsumerWidget {
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.green[600],
           ),
-          child: const Text('予約する', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+          child: Text(isLoggedIn ? '予約する' : '予約フォーム',
+              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
         ),
       ],
     );

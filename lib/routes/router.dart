@@ -38,7 +38,27 @@ GoRouter router(RouterRef ref) {
     GoRoute(
       path: '/home',
       builder: (BuildContext context, GoRouterState state) {
-        return const HomePage();
+        return Scaffold(
+          appBar: AppBar(
+            title: const Text('ホーム', style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold)),
+            backgroundColor: const Color(MyColor.mint1),
+            actions: [
+              Row(
+                children: [
+                  Text(ref.watch(loggedInUserProvider)?.username ?? '未ログイン'),
+                  IconButton(
+                    icon: const Icon(Icons.account_circle),
+                    padding: const EdgeInsets.only(right: 12.0),
+                    onPressed: () {
+                      context.go('/home/account');
+                    },
+                  ),
+                ],
+              ),
+            ],
+          ),
+          body: const HomePage(),
+        );
       },
       routes: [
         GoRoute(

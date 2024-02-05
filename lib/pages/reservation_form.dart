@@ -22,15 +22,16 @@ class ReservationFormPage extends HookConsumerWidget {
           constraints: const BoxConstraints(maxWidth: 600),
           padding: const EdgeInsets.all(16.0),
           decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment(-0.8, 0.3),
-              end: Alignment(0.3, 0.0),
-              colors: [
-                // Color(MyColor.mint1),
-                Color(MyColor.mint1),
-                Color(MyColor.mint2),
-              ],
-            ),
+            color: Color(MyColor.mint2),
+            // gradient: LinearGradient(
+            //   begin: Alignment(-0.8, 0.3),
+            //   end: Alignment(0.3, 0.0),
+            //   colors: [
+            //     // Color(MyColor.mint1),
+            //     Color(MyColor.mint1),
+            //     Color(MyColor.mint2),
+            //   ],
+            // ),
           ),
           child: Form(
             key: _formKey,
@@ -98,19 +99,19 @@ class ReservationFormPage extends HookConsumerWidget {
                   alignment: Alignment.center,
                   child: selectTime != null
                       ? Text(
-                          '予約日時: ${selectTime.year}年${selectTime.month}月${selectTime.day}日 ${selectTime.hour}時${selectTime.minute == 0 ? '00' : selectTime.minute}分',
-                          style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold, color: Colors.green[900]),
+                          '予約日時: ${selectTime.year}/${selectTime.month}/${selectTime.day} ${selectTime.hour}:${selectTime.minute == 0 ? '00' : selectTime.minute}',
+                          style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold, color: Colors.green[900]),
                         )
                       : Container(),
                 ),
                 const SizedBox(height: 16.0),
                 ElevatedButton(
                     style: ElevatedButton.styleFrom(backgroundColor: Colors.white, elevation: 3.0),
-                    child: const Padding(
-                      padding: EdgeInsets.all(4.0),
+                    child: Padding(
+                      padding: const EdgeInsets.all(4.0),
                       child: Text(
                         '予約する',
-                        style: TextStyle(fontSize: 20.0, color: Colors.green, fontWeight: FontWeight.bold),
+                        style: TextStyle(fontSize: 20.0, color: Colors.green[700]!, fontWeight: FontWeight.bold),
                       ),
                     ),
                     onPressed: () async {

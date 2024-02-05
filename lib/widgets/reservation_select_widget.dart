@@ -88,14 +88,14 @@ class ReservationSelectWidget extends HookConsumerWidget {
             animation: animation,
             builder: (context, child) {
               return Opacity(
-                opacity: animation.value < 0.5 ? 0 : animation.value,
+                opacity: animation.value < 0.4 ? 0 : animation.value,
                 child: Transform.scale(
                   scaleY: animation.value,
                   child: Container(
                     width: w,
                     height: upperOffset + lowerOffset + contentWidth * (60 / Settings.reservationRange),
                     decoration: BoxDecoration(
-                      color: Color(MyColor.mint2),
+                      color: const Color(MyColor.mint2),
                       border: Border(
                         top: BorderSide(color: Colors.green[700]!.withOpacity(0.5), width: 3),
                         bottom: BorderSide(color: Colors.green[700]!.withOpacity(0.5), width: 3),

@@ -8,46 +8,25 @@ class HomePage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final userName = ref.watch(loggedInUserProvider)?.username ?? '未ログイン';
-
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('ホーム'),
-        actions: [
-          Row(
-            children: [
-              Text(userName),
-              IconButton(
-                icon: const Icon(Icons.account_circle),
-                padding: const EdgeInsets.only(right: 12.0),
-                onPressed: () {
-                  context.go('/home/account');
-                },
-              ),
-            ],
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.green,
+            ),
+            child: const Text('予約',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 20.0,
+                  fontWeight: FontWeight.bold,
+                )),
+            onPressed: () {
+              context.go('/home/reservation');
+            },
           ),
         ],
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.green,
-              ),
-              child: Text('予約',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 20.0,
-                    fontWeight: FontWeight.bold,
-                  )),
-              onPressed: () {
-                context.go('/home/reservation');
-              },
-            ),
-          ],
-        ),
       ),
     );
   }

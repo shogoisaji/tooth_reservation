@@ -240,9 +240,31 @@ class ReservationPage extends HookConsumerWidget {
                               }),
                         ),
                         const TemporaryDateWidget(),
-                        const SizedBox(
-                          width: 60,
-                          height: 165,
+                        SizedBox(
+                          width: double.infinity,
+                          height: 190,
+                          child: Align(
+                            alignment: Alignment(0, -0.9),
+                            child: ref.watch(temporaryReservationDateProvider) != null
+                                ? ElevatedButton(
+                                    onPressed: () {
+                                      ref.read(temporaryReservationDateProvider.notifier).selectDate(null);
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.white,
+                                      elevation: 5,
+                                      shape: RoundedRectangleBorder(
+                                        side: BorderSide(color: Colors.green[700]!, width: 3.0),
+                                        borderRadius: BorderRadius.circular(12.0),
+                                      ),
+                                      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
+                                    ),
+                                    child: Text('リセット',
+                                        style: TextStyle(
+                                            color: Colors.green[700], fontSize: 18, fontWeight: FontWeight.bold)),
+                                  )
+                                : Container(),
+                          ),
                         ),
                       ],
                     ),
@@ -316,26 +338,27 @@ class ReservationPage extends HookConsumerWidget {
                           width: 95,
                         ),
                 )
-              : Positioned(
-                  bottom: 140,
-                  right: MediaQuery.of(context).size.width * 0.5 - 45,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      ref.read(temporaryReservationDateProvider.notifier).selectDate(null);
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      elevation: 5,
-                      shape: RoundedRectangleBorder(
-                        side: const BorderSide(color: Colors.green, width: 3.0),
-                        borderRadius: BorderRadius.circular(12.0),
-                      ),
-                      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-                    ),
-                    child: Text('Reset',
-                        style: TextStyle(color: Colors.green[700], fontSize: 20, fontWeight: FontWeight.bold)),
-                  ),
-                ),
+              : Container(),
+          // Positioned(
+          //     bottom: 130,
+          //     right: MediaQuery.of(context).size.width * 0.5 - 50,
+          //     child: ElevatedButton(
+          //       onPressed: () {
+          //         ref.read(temporaryReservationDateProvider.notifier).selectDate(null);
+          //       },
+          //       style: ElevatedButton.styleFrom(
+          //         backgroundColor: Colors.white,
+          //         elevation: 5,
+          //         shape: RoundedRectangleBorder(
+          //           side: const BorderSide(color: Colors.green, width: 3.0),
+          //           borderRadius: BorderRadius.circular(12.0),
+          //         ),
+          //         padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
+          //       ),
+          //       child: Text('リセット',
+          //           style: TextStyle(color: Colors.green[700], fontSize: 20, fontWeight: FontWeight.bold)),
+          //     ),
+          //   ),
           Positioned(
             bottom: -10,
             child: SizedBox(
@@ -632,10 +655,11 @@ class CustomDialog extends HookConsumerWidget {
         ElevatedButton(
           onPressed: () async {
             if (!isLoggedIn) {
+              context.pop();
               context.go('/home/reservation/reservation_form');
               return;
             }
-            Navigator.of(context).pop();
+            context.pop();
             try {
               final String? userId = ref.read(loggedInUserProvider)?.userId;
               final res = Reservation(

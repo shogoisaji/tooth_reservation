@@ -67,7 +67,7 @@ final detailSelectStateProvider =
 
 typedef _$DetailSelectState = AutoDisposeNotifier<bool>;
 String _$temporaryReservationDateHash() =>
-    r'801e786ab93f2d90f676edbed0128dd8a4f1d68f';
+    r'48388b992258fadd2fb932fe941f2ed8038545ae';
 
 /// See also [TemporaryReservationDate].
 @ProviderFor(TemporaryReservationDate)
@@ -97,7 +97,7 @@ final selectedDateProvider = NotifierProvider<SelectedDate, DateTime>.internal(
 );
 
 typedef _$SelectedDate = Notifier<DateTime>;
-String _$businessHoursHash() => r'f02ac8aeb1542a3043de6bede7270f04ee76e1d5';
+String _$businessHoursHash() => r'd973b6605ac751b1ed7a3b62611e7074e05b8627';
 
 /// See also [BusinessHours].
 @ProviderFor(BusinessHours)
@@ -127,7 +127,7 @@ final dragStateProvider = AutoDisposeNotifierProvider<DragState, bool>.internal(
 );
 
 typedef _$DragState = AutoDisposeNotifier<bool>;
-String _$loadingStateHash() => r'66d41ed271e83c2057621106883ad4e352cc8e3c';
+String _$loadingStateHash() => r'c5ad5038b4e4a4ebcf07005df266898fef8c3f06';
 
 /// See also [LoadingState].
 @ProviderFor(LoadingState)

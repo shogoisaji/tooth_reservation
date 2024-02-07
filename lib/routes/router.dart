@@ -29,7 +29,7 @@ GoRouter router(RouterRef ref) {
           builder: (BuildContext context, GoRouterState state) {
             return Scaffold(
               appBar: AppBar(title: const Text('サインアップ')),
-              body: const SignUpPage(),
+              body: SignUpPage(),
             );
           },
         ),

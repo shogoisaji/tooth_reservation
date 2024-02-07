@@ -1,33 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:tooth_reservation/services/auth_service.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:tooth_reservation/repositories/supabase/supabase_auth_repository.dart';
 
-class SignUpPage extends StatefulWidget {
-  const SignUpPage({super.key});
+class SignUpPage extends HookConsumerWidget {
+  SignUpPage({super.key});
 
-  @override
-  _SignUpPageState createState() => _SignUpPageState();
-}
-
-class _SignUpPageState extends State<SignUpPage> {
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController1 = TextEditingController();
-  final TextEditingController _passwordController2 = TextEditingController();
-  final TextEditingController _userNameController = TextEditingController();
-  final TextEditingController _phoneNumberController = TextEditingController();
-  final AuthService _authService = AuthService();
+  final TextEditingController _emailController = useTextEditingController();
+  final TextEditingController _passwordController1 = useTextEditingController();
+  final TextEditingController _passwordController2 = useTextEditingController();
+  final TextEditingController _userNameController = useTextEditingController();
+  final TextEditingController _phoneNumberController = useTextEditingController();
 
   @override
-  void dispose() {
-    _emailController.dispose();
-    _passwordController1.dispose();
-    _passwordController2.dispose();
-    _userNameController.dispose();
-    _phoneNumberController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final _authService = ref.read(supabaseAuthRepositoryProvider);
     final _formKey = GlobalKey<FormState>();
     return Scaffold(
       body: Center(

@@ -3,7 +3,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:tooth_reservation/services/auth_service.dart';
+import 'package:tooth_reservation/repositories/supabase/supabase_auth_repository.dart';
 import 'package:tooth_reservation/states/state.dart';
 
 class LoginPage extends HookConsumerWidget {
@@ -11,10 +11,10 @@ class LoginPage extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final TextEditingController _emailController = TextEditingController();
-    final TextEditingController _passwordController = TextEditingController();
+    final TextEditingController _emailController = useTextEditingController();
+    final TextEditingController _passwordController = useTextEditingController();
 
-    final AuthService _authService = AuthService();
+    final _authService = ref.read(supabaseAuthRepositoryProvider);
 
     useEffect(() {
       if (ref.read(loggedInUserProvider) != null) {

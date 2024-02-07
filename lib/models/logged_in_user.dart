@@ -1,13 +1,16 @@
-class LoggedInUser {
-  final String? userId;
-  final String username;
-  final String email;
-  final String? phoneNumber;
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-  LoggedInUser({
-    this.userId,
-    required this.username,
-    required this.email,
-    this.phoneNumber,
-  });
+part 'logged_in_user.freezed.dart';
+part 'logged_in_user.g.dart';
+
+@freezed
+class LoggedInUser with _$LoggedInUser {
+  const factory LoggedInUser({
+    required String userId,
+    required String username,
+    required String email,
+    String? phoneNumber,
+  }) = _LoggedInUser;
+
+  factory LoggedInUser.fromJson(Map<String, dynamic> json) => _$LoggedInUserFromJson(json);
 }

@@ -6,14 +6,14 @@ import 'package:tooth_reservation/repositories/supabase/supabase_auth_repository
 class SignUpPage extends HookConsumerWidget {
   SignUpPage({super.key});
 
-  final TextEditingController _emailController = useTextEditingController();
-  final TextEditingController _passwordController1 = useTextEditingController();
-  final TextEditingController _passwordController2 = useTextEditingController();
-  final TextEditingController _userNameController = useTextEditingController();
-  final TextEditingController _phoneNumberController = useTextEditingController();
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final TextEditingController _emailController = useTextEditingController();
+    final TextEditingController _passwordController1 = useTextEditingController();
+    final TextEditingController _passwordController2 = useTextEditingController();
+    final TextEditingController _userNameController = useTextEditingController();
+    final TextEditingController _phoneNumberController = useTextEditingController();
+
     final _authService = ref.read(supabaseAuthRepositoryProvider);
     final _formKey = GlobalKey<FormState>();
     return Scaffold(

@@ -5,10 +5,13 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:lottie/lottie.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:tooth_reservation/animations/calender_scale_animation.dart';
-import 'package:tooth_reservation/models/reservation.dart';
-import 'package:tooth_reservation/services/reservation_service.dart';
-import 'package:tooth_reservation/states/state.dart';
+import 'package:tooth_reservation/models/reservation/reservation.dart';
+import 'package:tooth_reservation/models/reservation/reservation_list.dart';
+import 'package:tooth_reservation/repositories/supabase/supabase_auth_repository.dart';
+import 'package:tooth_reservation/repositories/supabase/supabase_repository.dart';
+import 'package:tooth_reservation/states/app_state.dart';
 import 'package:tooth_reservation/theme/color_theme.dart';
 import 'package:tooth_reservation/widgets/loading.dart';
 import 'package:tooth_reservation/widgets/reservation_select_widget.dart';
@@ -22,15 +25,15 @@ class ReservationPage extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final w = MediaQuery.of(context).size.width;
+    final List<Reservation>? reservationList = ref.watch(reservationListProvider);
+    final w = MediaQuery.sizeOf(context).width;
     final isDragging = useState<bool>(false);
-    final reservationList = useState<List<Reservation>>([]);
-    final ReservationService service = ReservationService();
-    final _calenderWidth = MediaQuery.of(context).size.width < minWidth
+    // final reservationList = useState<List<Reservation>>([]);
+    final _calenderWidth = MediaQuery.sizeOf(context).width < minWidth
         ? minWidth
-        : MediaQuery.of(context).size.width > maxWidth
+        : MediaQuery.sizeOf(context).width > maxWidth
             ? maxWidth
-            : MediaQuery.of(context).size.width;
+            : MediaQuery.sizeOf(context).width;
     final selectedMonth = useState<Map<String, int>>({"year": DateTime.now().year, "month": DateTime.now().month});
     int getFirstWeekDay() {
       return DateTime(selectedMonth.value["year"]!, selectedMonth.value["month"]!).weekday;
@@ -57,15 +60,22 @@ class ReservationPage extends HookConsumerWidget {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         ref.read(loadingStateProvider.notifier).show();
       });
-      final StreamSubscription<List<Reservation>> stream = service.getReservationListAllStream().listen((event) {
-        print('event: ${event.length}');
-        reservationList.value = event;
+      //TODO stream修正 予約情報を取得できていない
+
+      if (reservationList != []) {
         Future.delayed(const Duration(milliseconds: 500), () {
           ref.read(loadingStateProvider.notifier).hide();
         });
-      });
+      }
+      // final StreamSubscription<List<Reservation>> stream = _client.getReservationListAllStream().listen((event) {
+      //   print('event: ${event.length}');
+      //   reservationList.value = event;
+      //   Future.delayed(const Duration(milliseconds: 500), () {
+      //     ref.read(loadingStateProvider.notifier).hide();
+      //   });
+      // });
       return () {
-        stream.cancel();
+        // stream.cancel();
       };
     }, []);
 
@@ -224,15 +234,17 @@ class ReservationPage extends HookConsumerWidget {
                                     ? null
                                     : daysListGenerate(selectedMonth.value["year"]!, selectedMonth.value["month"]!)[
                                         index - getFirstWeekDay()];
-                                int count = reservationList.value.where((reservation) {
-                                  // 時間を無視して日付のみ
-                                  final convertDate = DateTime(
-                                    reservation.date.year,
-                                    reservation.date.month,
-                                    reservation.date.day,
-                                  );
-                                  return convertDate == day;
-                                }).length;
+                                int count = reservationList == null
+                                    ? 0
+                                    : reservationList.where((reservation) {
+                                        // 時間を無視して日付のみ
+                                        final convertDate = DateTime(
+                                          reservation.date.year,
+                                          reservation.date.month,
+                                          reservation.date.day,
+                                        );
+                                        return convertDate == day;
+                                      }).length;
                                 final Color? color = count == 0
                                     ? Colors.white
                                     : Colors.red[100 * (count + 1) > 900 ? 900 : 100 * (count + 1)];
@@ -271,7 +283,6 @@ class ReservationPage extends HookConsumerWidget {
                   ),
                 ),
                 ref.watch(detailSelectStateProvider) ? const ReservationSelectWidget() : Container(),
-                true ? const Loading() : Container(),
                 // ref.watch(loadingStateProvider) ? const Loading() : Container(),
                 // Positioned(
                 //   bottom: 200,
@@ -303,7 +314,7 @@ class ReservationPage extends HookConsumerWidget {
           ref.watch(temporaryReservationDateProvider) == null
               ? Positioned(
                   bottom: ref.watch(detailSelectStateProvider) ? 65 : 45,
-                  right: MediaQuery.of(context).size.width * 0.5 - 50,
+                  right: w * 0.5 - 50,
                   child: ref.watch(detailSelectStateProvider)
                       ? Draggable(
                           data: 1,
@@ -339,30 +350,10 @@ class ReservationPage extends HookConsumerWidget {
                         ),
                 )
               : Container(),
-          // Positioned(
-          //     bottom: 130,
-          //     right: MediaQuery.of(context).size.width * 0.5 - 50,
-          //     child: ElevatedButton(
-          //       onPressed: () {
-          //         ref.read(temporaryReservationDateProvider.notifier).selectDate(null);
-          //       },
-          //       style: ElevatedButton.styleFrom(
-          //         backgroundColor: Colors.white,
-          //         elevation: 5,
-          //         shape: RoundedRectangleBorder(
-          //           side: const BorderSide(color: Colors.green, width: 3.0),
-          //           borderRadius: BorderRadius.circular(12.0),
-          //         ),
-          //         padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
-          //       ),
-          //       child: Text('リセット',
-          //           style: TextStyle(color: Colors.green[700], fontSize: 20, fontWeight: FontWeight.bold)),
-          //     ),
-          //   ),
           Positioned(
             bottom: -10,
             child: SizedBox(
-              width: MediaQuery.of(context).size.width,
+              width: w,
               height: 135,
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
@@ -407,13 +398,14 @@ class ReservationPage extends HookConsumerWidget {
                   ref.watch(temporaryReservationDateProvider) == null
               ? Positioned(
                   bottom: 60,
-                  right: MediaQuery.of(context).size.width * 0.5 - 75,
+                  right: w * 0.5 - 75,
                   child: IgnorePointer(
                       child: Lottie.asset(
                     'assets/lottie/pickUp.json',
                     width: 150,
                   )))
               : Container(),
+          const Loading(),
         ],
       ),
     );
@@ -522,7 +514,7 @@ class TemporaryDateWidget extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final tempoDay = ref.watch(temporaryReservationDateProvider);
-    final w = MediaQuery.of(context).size.width;
+    final w = MediaQuery.sizeOf(context).width;
 
     String formatDate(DateTime date) {
       return "${date.year}/${date.month}/${date.day} ${date.hour}:${date.minute == 0 ? '00' : date.minute}";
@@ -633,12 +625,13 @@ class CustomDialog extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final _client = ref.watch(supabaseRepositoryProvider);
     String formatDate(DateTime date) {
       return "${date.year}/${date.month}/${date.day} ${date.hour}:${date.minute == 0 ? '00' : date.minute}";
     }
 
     final String formattedDate = formatDate(date);
-    final isLoggedIn = ref.watch(loggedInUserProvider) != null;
+    final isLoggedIn = ref.watch(supabaseAuthRepositoryProvider).authUser != null;
     return AlertDialog(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12.0),
@@ -661,19 +654,21 @@ class CustomDialog extends HookConsumerWidget {
             }
             context.pop();
             try {
-              final String? userId = ref.read(loggedInUserProvider)?.userId;
+              final User? user = ref.watch(supabaseAuthRepositoryProvider).authUser;
+              if (user == null) {
+                return;
+              }
               final res = Reservation(
                 id: 1,
-                userId: userId,
-                userName: 'test',
-                email: 'email',
-                phoneNumber: '000-0000-0000',
+                userId: user.id,
+                userName: null,
+                email: null,
+                phoneNumber: null,
                 date: date,
               );
-              final service = ReservationService();
-              final data = await service.insertReservation(res);
+              final data = await _client.insertReservation(res);
               ref.read(temporaryReservationDateProvider.notifier).selectDate(null);
-              print('data:$data');
+              print('insert result:$data');
             } catch (e) {
               print('エラーが発生しました: $e');
             }
@@ -682,7 +677,7 @@ class CustomDialog extends HookConsumerWidget {
             backgroundColor: Colors.green[600],
           ),
           child: Text(isLoggedIn ? '予約する' : '予約フォーム',
-              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
         ),
       ],
     );

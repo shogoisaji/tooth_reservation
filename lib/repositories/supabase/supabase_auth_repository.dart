@@ -56,8 +56,4 @@ class SupabaseAuthRepository {
   Future<void> resetPassword() async {
     await _client.auth.reauthenticate();
   }
-
-  // Stream<User?> getUserStream() {
-  //   return _client.auth.onAuthStateChange.map((data) => data.session?.user);
-  // }
 }

@@ -3,10 +3,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:tooth_reservation/models/reservation.dart';
-import 'package:tooth_reservation/models/settings.dart';
-import 'package:tooth_reservation/services/reservation_service.dart';
-import 'package:tooth_reservation/states/state.dart';
+import 'package:tooth_reservation/models/reservation/reservation.dart';
+import 'package:tooth_reservation/models/settings/business_hour_settings.dart';
+import 'package:tooth_reservation/states/app_state.dart';
 import 'package:tooth_reservation/theme/color_theme.dart';
 
 class ReservationSelectWidget extends HookConsumerWidget {
@@ -19,28 +18,32 @@ class ReservationSelectWidget extends HookConsumerWidget {
     const durationValue = 300;
     final animationController = useAnimationController(duration: const Duration(milliseconds: durationValue));
     final animation = CurvedAnimation(parent: animationController, curve: Curves.easeInOut);
-    final w = MediaQuery.of(context).size.width;
+    final w = MediaQuery.sizeOf(context).width;
     final DateFormat format = DateFormat('yyyy.MM.dd');
     final selectedDate = ref.watch(selectedDateProvider);
-    int hourCount() {
-      int count = 0;
-      int current = 0;
-      for (int i = 0; i < ref.watch(businessHoursProvider).length; i++) {
-        if (ref.watch(businessHoursProvider)[i].hour != current) {
-          count++;
-          current = ref.watch(businessHoursProvider)[i].hour;
-        }
-      }
-      return count;
-    }
+    final availableTimes = ref.watch(businessHourSettingsProvider).getReservationAvailableTimes();
+    final availableTimesInterval = ref.watch(businessHourSettingsProvider).reservationMinuteInterval;
 
-    int rowCount = hourCount();
+    // int hourCount() {
+    //   int count = 0;
+    //   int current = 0;
+    //   for (int i = 0; i < ref.watch(businessHoursProvider).length; i++) {
+    //     if (ref.watch(businessHoursProvider)[i].hour != current) {
+    //       count++;
+    //       current = ref.watch(businessHoursProvider)[i].hour;
+    //     }
+    //   }
+    //   return count;
+    // }
+
+    final int rowCount = ref.watch(businessHourSettingsProvider).hourCount;
     const offset = 30;
     double contentWidth = (w - offset) / rowCount;
 
-    bool checkExistReservation(DateTime time) {
+    bool checkExistReservation(TimeOfDay time) {
       DateTime convertDate = DateTime(selectedDate.year, selectedDate.month, selectedDate.day, time.hour, time.minute);
-      final List<Reservation>? reservedList = ref.watch(selectedReservationListDataProvider);
+      final List<Reservation>? reservedList = null;
+      // final List<Reservation>? reservedList = ref.watch(selectedReservationListDataProvider);
       if (reservedList == null) {
         return false;
       }
@@ -93,7 +96,7 @@ class ReservationSelectWidget extends HookConsumerWidget {
                   scaleY: animation.value,
                   child: Container(
                     width: w,
-                    height: upperOffset + lowerOffset + contentWidth * (60 / Settings.reservationRange),
+                    height: upperOffset + lowerOffset + contentWidth * (60 / availableTimesInterval),
                     decoration: BoxDecoration(
                       color: const Color(MyColor.mint2),
                       border: Border(
@@ -119,16 +122,14 @@ class ReservationSelectWidget extends HookConsumerWidget {
                                 style: TextStyle(color: Colors.green[800]!, fontSize: 22, fontWeight: FontWeight.bold)),
                           ),
                         ),
-                        ...List.generate(ref.watch(businessHoursProvider).length, (index) {
-                          final bool isReserved = checkExistReservation(ref.watch(businessHoursProvider)[index]);
-                          final int firstHour = ref.watch(businessHoursProvider)[0].hour;
+                        ...List.generate(availableTimes.length, (index) {
+                          final bool isReserved = checkExistReservation(availableTimes[index]);
+                          final int firstHour = availableTimes[0].hour;
                           final double leftPosition =
-                              ((ref.watch(businessHoursProvider)[index].hour) - firstHour).toDouble() * contentWidth +
-                                  offset / 2;
-                          final double topPosition = (ref.watch(businessHoursProvider)[index].minute).toDouble() /
-                                  Settings.reservationRange *
-                                  contentWidth +
-                              upperOffset;
+                              ((availableTimes[index].hour) - firstHour).toDouble() * contentWidth + offset / 2;
+                          final double topPosition =
+                              (availableTimes[index].minute).toDouble() / availableTimesInterval * contentWidth +
+                                  upperOffset;
                           return Positioned(
                               left: leftPosition,
                               top: topPosition,
@@ -165,6 +166,7 @@ class ScheduleTimeContent extends HookConsumerWidget {
     final animation = CurvedAnimation(parent: animationController, curve: Curves.elasticOut);
     final isScaleUp = useState(false);
     final isSelected = useState(false);
+    final availableTimes = ref.watch(businessHourSettingsProvider).getReservationAvailableTimes();
 
     void selectCheck() {
       final DateTime? selectedDate = ref.watch(temporaryReservationDateProvider);
@@ -172,8 +174,8 @@ class ScheduleTimeContent extends HookConsumerWidget {
           ref.watch(selectedDateProvider).year,
           ref.watch(selectedDateProvider).month,
           ref.watch(selectedDateProvider).day,
-          ref.watch(businessHoursProvider)[index].hour,
-          ref.watch(businessHoursProvider)[index].minute);
+          availableTimes[index].hour,
+          availableTimes[index].minute);
       print('selectedDate:$selectedDate');
       if (selectedDate == null) {
         isSelected.value = false;
@@ -219,8 +221,8 @@ class ScheduleTimeContent extends HookConsumerWidget {
                   ref.watch(selectedDateProvider).year,
                   ref.watch(selectedDateProvider).month,
                   ref.watch(selectedDateProvider).day,
-                  ref.watch(businessHoursProvider)[index].hour,
-                  ref.watch(businessHoursProvider)[index].minute));
+                  availableTimes[index].hour,
+                  availableTimes[index].minute));
               selectCheck();
             },
             builder: (context, candidateData, rejectedData) {
@@ -269,7 +271,7 @@ class ScheduleTimeContent extends HookConsumerWidget {
                       ],
                     ),
                     child: Text(
-                      '${ref.watch(businessHoursProvider)[index].hour}:${ref.watch(businessHoursProvider)[index].minute == 0 ? '00' : ref.watch(businessHoursProvider)[index].minute}',
+                      '${availableTimes[index].hour}:${availableTimes[index].minute == 0 ? '00' : availableTimes[index].minute}',
                       style: TextStyle(fontSize: 12 * (1 + animation.value * 0.8)),
                     ),
                   ),

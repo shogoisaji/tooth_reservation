@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:tooth_reservation/repositories/supabase/supabase_auth_repository.dart';
-import 'package:tooth_reservation/states/state.dart';
 
 class LoginPage extends HookConsumerWidget {
   const LoginPage({super.key});
@@ -17,7 +16,7 @@ class LoginPage extends HookConsumerWidget {
     final _authService = ref.read(supabaseAuthRepositoryProvider);
 
     useEffect(() {
-      if (ref.read(loggedInUserProvider) != null) {
+      if (_authService.authUser != null) {
         context.go('/home');
       }
       return null;
@@ -133,6 +132,9 @@ class LoginPage extends HookConsumerWidget {
                   onPressed: () {
                     context.go('/home');
                   },
+                ),
+                SizedBox(
+                  height: 16.0,
                 ),
               ],
             ),

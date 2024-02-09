@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:tooth_reservation/states/state.dart';
+import 'package:tooth_reservation/models/reservation/reservation.dart';
+import 'package:tooth_reservation/repositories/supabase/supabase_repository.dart';
+import 'package:tooth_reservation/states/app_state.dart';
 import 'package:tooth_reservation/theme/color_theme.dart';
 
 class ReservationFormPage extends HookConsumerWidget {
@@ -14,8 +16,9 @@ class ReservationFormPage extends HookConsumerWidget {
     final _userNameController = useTextEditingController();
     final _phoneNumberController = useTextEditingController();
     final DateTime? selectTime = ref.watch(temporaryReservationDateProvider);
-
+    final _client = ref.read(supabaseRepositoryProvider);
     final _formKey = GlobalKey<FormState>();
+
     return Scaffold(
       body: Center(
         child: Container(
@@ -23,15 +26,6 @@ class ReservationFormPage extends HookConsumerWidget {
           padding: const EdgeInsets.all(16.0),
           decoration: const BoxDecoration(
             color: Color(MyColor.mint2),
-            // gradient: LinearGradient(
-            //   begin: Alignment(-0.8, 0.3),
-            //   end: Alignment(0.3, 0.0),
-            //   colors: [
-            //     // Color(MyColor.mint1),
-            //     Color(MyColor.mint1),
-            //     Color(MyColor.mint2),
-            //   ],
-            // ),
           ),
           child: Form(
             key: _formKey,
@@ -116,28 +110,31 @@ class ReservationFormPage extends HookConsumerWidget {
                     ),
                     onPressed: () async {
                       if (_formKey.currentState!.validate()) {
-                        if (context.mounted) {
-                          context.go('/home');
-                          // showDialog(
-                          //   context: context,
-                          //   builder: (BuildContext context) {
-                          //     return AlertDialog(
-                          //       title: const Text('仮登録が完了しました。'),
-                          //       content: const Text('Eメールを確認して本登録を完了してください。'),
-                          //       actions: <Widget>[
-                          //         TextButton(
-                          //           child: const Text('OK'),
-                          //           onPressed: () {
-                          //             Navigator.of(context).pop();
-                          //             _emailController.clear();
-                          //             _userNameController.clear();
-                          //             _phoneNumberController.clear();
-                          //           },
-                          //         ),
-                          //       ],
-                          //     );
-                          //   },
-                          // );
+                        try {
+                          if (selectTime == null) {
+                            throw Exception('予約日時が選択されていません');
+                          }
+                          final res = Reservation(
+                            id: null,
+                            userId: null,
+                            userName: _userNameController.text,
+                            email: _emailController.text,
+                            phoneNumber: _phoneNumberController.text,
+                            date: selectTime,
+                          );
+                          final error = await _client.insertReservation(res);
+                          if (error != null && context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              content: Text('予約に失敗しました。$error'),
+                            ));
+                            return;
+                          }
+                          ref.read(temporaryReservationDateProvider.notifier).selectDate(null);
+                          if (context.mounted) {
+                            context.go('/home');
+                          }
+                        } catch (e) {
+                          print('no login user insert error: $e');
                         }
                       }
                     }),

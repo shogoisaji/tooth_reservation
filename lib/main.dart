@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tooth_reservation/models/settings/load_setting_data.dart';
 import 'package:tooth_reservation/routes/router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -27,6 +28,7 @@ class MyApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(routerProvider);
+    ref.read(loadSettingDataProvider.notifier).load();
     return MaterialApp.router(
       theme: ThemeData(fontFamily: 'M PLUS Rounded 1c'),
       debugShowCheckedModeBanner: false,

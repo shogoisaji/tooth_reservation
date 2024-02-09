@@ -3,20 +3,23 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:tooth_reservation/models/user/logged_in_user.dart';
 import 'package:tooth_reservation/pages/account_page.dart';
 import 'package:tooth_reservation/pages/home_page.dart';
 import 'package:tooth_reservation/pages/login_page.dart';
 import 'package:tooth_reservation/pages/reservation_form.dart';
 import 'package:tooth_reservation/pages/reservation_page.dart';
 import 'package:tooth_reservation/pages/signup_page.dart';
-import 'package:tooth_reservation/states/state.dart';
+import 'package:tooth_reservation/repositories/supabase/supabase_auth_repository.dart';
 import 'package:tooth_reservation/theme/color_theme.dart';
 
 part 'router.g.dart';
 
 @riverpod
 GoRouter router(RouterRef ref) {
-  final bool _isLoggedIn = ref.watch(loggedInUserDataProvider) != null;
+  // 仮のログインユーザー
+  final String? loggedInUser = ref.watch(supabaseAuthRepositoryProvider).authUser?.userMetadata?['user_name'];
+  final bool _isLoggedIn = ref.watch(supabaseAuthRepositoryProvider).authUser != null;
   final routes = [
     GoRoute(
       path: '/login',
@@ -45,7 +48,7 @@ GoRouter router(RouterRef ref) {
             actions: [
               Row(
                 children: [
-                  Text(ref.watch(loggedInUserProvider)?.username ?? '未ログイン'),
+                  Text(loggedInUser ?? '未ログイン'),
                   IconButton(
                     icon: const Icon(Icons.account_circle),
                     padding: const EdgeInsets.only(right: 12.0),

@@ -24,7 +24,7 @@ final reservationListStreamProvider =
 
 typedef ReservationListStreamRef
     = AutoDisposeStreamProviderRef<List<Reservation>?>;
-String _$reservationListHash() => r'471023016bc022161c4a50d43fb11820eb22bbd6';
+String _$reservationListHash() => r'2a22404fa738c4f725d49067785baa4c3432c03b';
 
 /// See also [reservationList].
 @ProviderFor(reservationList)

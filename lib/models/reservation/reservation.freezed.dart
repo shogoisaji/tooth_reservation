@@ -21,7 +21,7 @@ Reservation _$ReservationFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$Reservation {
   int? get id => throw _privateConstructorUsedError;
-  DateTime get date => throw _privateConstructorUsedError;
+  DateTime get reservationDate => throw _privateConstructorUsedError;
   String? get userId => throw _privateConstructorUsedError;
   String? get userName => throw _privateConstructorUsedError;
   String? get email => throw _privateConstructorUsedError;
@@ -42,7 +42,7 @@ abstract class $ReservationCopyWith<$Res> {
   @useResult
   $Res call(
       {int? id,
-      DateTime date,
+      DateTime reservationDate,
       String? userId,
       String? userName,
       String? email,
@@ -64,7 +64,7 @@ class _$ReservationCopyWithImpl<$Res, $Val extends Reservation>
   @override
   $Res call({
     Object? id = freezed,
-    Object? date = null,
+    Object? reservationDate = null,
     Object? userId = freezed,
     Object? userName = freezed,
     Object? email = freezed,
@@ -76,9 +76,9 @@ class _$ReservationCopyWithImpl<$Res, $Val extends Reservation>
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
               as int?,
-      date: null == date
-          ? _value.date
-          : date // ignore: cast_nullable_to_non_nullable
+      reservationDate: null == reservationDate
+          ? _value.reservationDate
+          : reservationDate // ignore: cast_nullable_to_non_nullable
               as DateTime,
       userId: freezed == userId
           ? _value.userId
@@ -114,7 +114,7 @@ abstract class _$$ReservationImplCopyWith<$Res>
   @useResult
   $Res call(
       {int? id,
-      DateTime date,
+      DateTime reservationDate,
       String? userId,
       String? userName,
       String? email,
@@ -134,7 +134,7 @@ class __$$ReservationImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? id = freezed,
-    Object? date = null,
+    Object? reservationDate = null,
     Object? userId = freezed,
     Object? userName = freezed,
     Object? email = freezed,
@@ -146,9 +146,9 @@ class __$$ReservationImplCopyWithImpl<$Res>
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
               as int?,
-      date: null == date
-          ? _value.date
-          : date // ignore: cast_nullable_to_non_nullable
+      reservationDate: null == reservationDate
+          ? _value.reservationDate
+          : reservationDate // ignore: cast_nullable_to_non_nullable
               as DateTime,
       userId: freezed == userId
           ? _value.userId
@@ -179,7 +179,7 @@ class __$$ReservationImplCopyWithImpl<$Res>
 class _$ReservationImpl extends _Reservation {
   const _$ReservationImpl(
       {this.id,
-      required this.date,
+      required this.reservationDate,
       this.userId,
       this.userName,
       this.email,
@@ -193,7 +193,7 @@ class _$ReservationImpl extends _Reservation {
   @override
   final int? id;
   @override
-  final DateTime date;
+  final DateTime reservationDate;
   @override
   final String? userId;
   @override
@@ -207,7 +207,7 @@ class _$ReservationImpl extends _Reservation {
 
   @override
   String toString() {
-    return 'Reservation(id: $id, date: $date, userId: $userId, userName: $userName, email: $email, phoneNumber: $phoneNumber, createdAt: $createdAt)';
+    return 'Reservation(id: $id, reservationDate: $reservationDate, userId: $userId, userName: $userName, email: $email, phoneNumber: $phoneNumber, createdAt: $createdAt)';
   }
 
   @override
@@ -216,7 +216,8 @@ class _$ReservationImpl extends _Reservation {
         (other.runtimeType == runtimeType &&
             other is _$ReservationImpl &&
             (identical(other.id, id) || other.id == id) &&
-            (identical(other.date, date) || other.date == date) &&
+            (identical(other.reservationDate, reservationDate) ||
+                other.reservationDate == reservationDate) &&
             (identical(other.userId, userId) || other.userId == userId) &&
             (identical(other.userName, userName) ||
                 other.userName == userName) &&
@@ -229,8 +230,8 @@ class _$ReservationImpl extends _Reservation {
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(
-      runtimeType, id, date, userId, userName, email, phoneNumber, createdAt);
+  int get hashCode => Object.hash(runtimeType, id, reservationDate, userId,
+      userName, email, phoneNumber, createdAt);
 
   @JsonKey(ignore: true)
   @override
@@ -249,7 +250,7 @@ class _$ReservationImpl extends _Reservation {
 abstract class _Reservation extends Reservation {
   const factory _Reservation(
       {final int? id,
-      required final DateTime date,
+      required final DateTime reservationDate,
       final String? userId,
       final String? userName,
       final String? email,
@@ -263,7 +264,7 @@ abstract class _Reservation extends Reservation {
   @override
   int? get id;
   @override
-  DateTime get date;
+  DateTime get reservationDate;
   @override
   String? get userId;
   @override

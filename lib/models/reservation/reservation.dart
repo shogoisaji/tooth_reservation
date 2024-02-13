@@ -9,7 +9,7 @@ class Reservation with _$Reservation {
 
   const factory Reservation({
     int? id,
-    required DateTime date,
+    required DateTime reservationDate,
     String? userId,
     String? userName,
     String? email,
@@ -21,7 +21,7 @@ class Reservation with _$Reservation {
 
   factory Reservation.validate({
     int? id,
-    required DateTime date,
+    required DateTime reservationDate,
     String? userId,
     String? userName,
     String? email,
@@ -33,7 +33,7 @@ class Reservation with _$Reservation {
     }
     return Reservation(
       id: id,
-      date: date,
+      reservationDate: reservationDate,
       userId: userId,
       userName: userName,
       email: email,

@@ -120,7 +120,7 @@ class ReservationFormPage extends HookConsumerWidget {
                             userName: _userNameController.text,
                             email: _emailController.text,
                             phoneNumber: _phoneNumberController.text,
-                            date: selectTime,
+                            reservationDate: selectTime,
                           );
                           final error = await _client.insertReservation(res);
                           if (error != null && context.mounted) {

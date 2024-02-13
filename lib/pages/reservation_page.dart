@@ -35,6 +35,21 @@ class ReservationPage extends HookConsumerWidget {
             ? maxWidth
             : MediaQuery.sizeOf(context).width;
     final selectedMonth = useState<Map<String, int>>({"year": DateTime.now().year, "month": DateTime.now().month});
+    final isCurrentMonthSelected = useState<bool>(true);
+    useEffect(() {
+      print(reservationList);
+      return () {};
+    }, []);
+
+    useEffect(() {
+      if (selectedMonth.value["year"]! == DateTime.now().year &&
+          selectedMonth.value["month"]! == DateTime.now().month) {
+        isCurrentMonthSelected.value = true;
+      } else {
+        isCurrentMonthSelected.value = false;
+      }
+      return () {};
+    }, [selectedMonth.value]);
     int getFirstWeekDay() {
       return DateTime(selectedMonth.value["year"]!, selectedMonth.value["month"]!).weekday;
     }
@@ -144,8 +159,12 @@ class ReservationPage extends HookConsumerWidget {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               IconButton(
-                                icon: FaIcon(FontAwesomeIcons.circleChevronLeft, color: Colors.green[900]),
+                                icon: FaIcon(FontAwesomeIcons.circleChevronLeft,
+                                    color: isCurrentMonthSelected.value ? Colors.transparent : Colors.green[900]),
                                 onPressed: () {
+                                  if (isCurrentMonthSelected.value) {
+                                    return;
+                                  }
                                   int newMonth = selectedMonth.value["month"]! - 1;
                                   int newYear = selectedMonth.value["year"]!;
                                   if (newMonth == 0) {
@@ -239,9 +258,9 @@ class ReservationPage extends HookConsumerWidget {
                                     : reservationList.where((reservation) {
                                         // 時間を無視して日付のみ
                                         final convertDate = DateTime(
-                                          reservation.date.year,
-                                          reservation.date.month,
-                                          reservation.date.day,
+                                          reservation.reservationDate.year,
+                                          reservation.reservationDate.month,
+                                          reservation.reservationDate.day,
                                         );
                                         return convertDate == day;
                                       }).length;
@@ -275,7 +294,12 @@ class ReservationPage extends HookConsumerWidget {
                                         style: TextStyle(
                                             color: Colors.green[700], fontSize: 18, fontWeight: FontWeight.bold)),
                                   )
-                                : Container(),
+                                : const Padding(
+                                    padding: EdgeInsets.only(top: 8.0),
+                                    child: Text('日にちを選択してください',
+                                        style: TextStyle(
+                                            color: Color(MyColor.mint4), fontSize: 22, fontWeight: FontWeight.bold)),
+                                  ),
                           ),
                         ),
                       ],
@@ -523,9 +547,7 @@ class TemporaryDateWidget extends HookConsumerWidget {
     final String formattedDate = tempoDay != null ? formatDate(tempoDay) : "";
 
     return Container(
-        // width: 350,
-        margin: const EdgeInsets.symmetric(horizontal: 8.0),
-        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+        padding: const EdgeInsets.fromLTRB(12.0, 4.0, 12.0, 8.0),
         decoration: BoxDecoration(
           borderRadius: const BorderRadius.only(
             topLeft: Radius.circular(30.0),
@@ -664,7 +686,7 @@ class CustomDialog extends HookConsumerWidget {
                 userName: null,
                 email: null,
                 phoneNumber: null,
-                date: date,
+                reservationDate: date,
               );
               final data = await _client.insertReservation(res);
               ref.read(temporaryReservationDateProvider.notifier).selectDate(null);

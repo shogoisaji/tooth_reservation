@@ -4,6 +4,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:tooth_reservation/models/reservation/reservation.dart';
+import 'package:tooth_reservation/models/reservation/reservation_list.dart';
 import 'package:tooth_reservation/models/settings/business_hour_settings.dart';
 import 'package:tooth_reservation/states/app_state.dart';
 import 'package:tooth_reservation/theme/color_theme.dart';
@@ -24,31 +25,18 @@ class ReservationSelectWidget extends HookConsumerWidget {
     final availableTimes = ref.watch(businessHourSettingsProvider).getReservationAvailableTimes();
     final availableTimesInterval = ref.watch(businessHourSettingsProvider).reservationMinuteInterval;
 
-    // int hourCount() {
-    //   int count = 0;
-    //   int current = 0;
-    //   for (int i = 0; i < ref.watch(businessHoursProvider).length; i++) {
-    //     if (ref.watch(businessHoursProvider)[i].hour != current) {
-    //       count++;
-    //       current = ref.watch(businessHoursProvider)[i].hour;
-    //     }
-    //   }
-    //   return count;
-    // }
-
     final int rowCount = ref.watch(businessHourSettingsProvider).hourCount;
-    const offset = 30;
+    final offset = w > 800 ? w / 2 : 30;
     double contentWidth = (w - offset) / rowCount;
 
     bool checkExistReservation(TimeOfDay time) {
       DateTime convertDate = DateTime(selectedDate.year, selectedDate.month, selectedDate.day, time.hour, time.minute);
-      final List<Reservation>? reservedList = null;
-      // final List<Reservation>? reservedList = ref.watch(selectedReservationListDataProvider);
+      final List<Reservation>? reservedList = ref.watch(reservationListProvider);
       if (reservedList == null) {
         return false;
       }
       for (final reservation in reservedList) {
-        if (reservation.date == convertDate) {
+        if (reservation.reservationDate == convertDate) {
           return true;
         }
       }

@@ -3,6 +3,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:lottie/lottie.dart';
 import 'package:tooth_reservation/states/app_state.dart';
+import 'package:tooth_reservation/theme/color_theme.dart';
 
 class Loading extends HookConsumerWidget {
   const Loading({super.key});
@@ -38,7 +39,7 @@ class Loading extends HookConsumerWidget {
                 alignment: const Alignment(-0.08, -0.1),
                 width: w,
                 height: double.infinity,
-                color: Colors.white.withOpacity(0.99),
+                color: const Color(MyColor.mint4),
                 child: Lottie.asset(
                   'assets/lottie/tooth_wash.json',
                   controller: animationController,

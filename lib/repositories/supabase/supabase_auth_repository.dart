@@ -17,6 +17,15 @@ class SupabaseAuthRepository {
 
   User? get authUser => _client.auth.currentUser;
 
+  Stream<Session?> streamSession() {
+    StreamController<Session?> sessionController = StreamController<Session?>();
+    _client.auth.onAuthStateChange.listen((data) {
+      final session = data.session;
+      sessionController.add(session);
+    });
+    return sessionController.stream;
+  }
+
 // Email and password sign up
   Future<String?> signUp(String email, String password, String username, String? phoneNumber) async {
     try {
@@ -56,8 +65,26 @@ class SupabaseAuthRepository {
   Future<void> resetPassword() async {
     await _client.auth.reauthenticate();
   }
+}
 
-  // Stream<User?> getUserStream() {
-  //   return _client.auth.onAuthStateChange.map((data) => data.session?.user);
-  // }
+// sessionを監視する
+@riverpod
+Stream<Session?> sessionStateStream(SessionStateStreamRef ref) {
+  final session = ref.watch(supabaseAuthRepositoryProvider).streamSession();
+  return session;
+}
+
+@riverpod
+Session? sessionState(SessionStateRef ref) {
+  final session = ref.watch(sessionStateStreamProvider);
+  return session.when(
+    loading: () => null,
+    error: (e, __) {
+      print("error: $e");
+      return null;
+    },
+    data: (d) {
+      return d;
+    },
+  );
 }

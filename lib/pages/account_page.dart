@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:tooth_reservation/repositories/supabase/supabase_auth_repository.dart';
-import 'package:tooth_reservation/states/state.dart';
 
 class AccountPage extends HookConsumerWidget {
   const AccountPage({super.key});
@@ -12,7 +11,7 @@ class AccountPage extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final _authService = ref.read(supabaseAuthRepositoryProvider);
-    final userData = ref.watch(loggedInUserProvider);
+    final userData = _authService.authUser;
     final TextEditingController _passwordController = useTextEditingController();
 
     return userData != null
@@ -20,9 +19,9 @@ class AccountPage extends HookConsumerWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Text('アカウント'),
-              Text('name:${userData.username}'),
+              // Text('name:${userData.username}'),
               Text('email:${userData.email}'),
-              Text('number:${userData.phoneNumber}'),
+              // Text('number:${userData.phoneNumber}'),
               TextField(
                 decoration: const InputDecoration(
                   labelText: 'new password',

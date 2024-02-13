@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:lottie/lottie.dart';
-import 'package:tooth_reservation/states/state.dart';
+import 'package:tooth_reservation/states/app_state.dart';
 
 class Loading extends HookConsumerWidget {
   const Loading({super.key});
@@ -11,7 +11,7 @@ class Loading extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final animationController = useAnimationController(duration: const Duration(milliseconds: 1500));
     final opacityController = useAnimationController(duration: const Duration(milliseconds: 500));
-    final w = MediaQuery.of(context).size.width;
+    final w = MediaQuery.sizeOf(context).width;
     final isLoading = ref.watch(loadingStateProvider);
     useEffect(() {
       if (isLoading) {

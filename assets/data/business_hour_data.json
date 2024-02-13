@@ -1,0 +1,5 @@
+{
+    "openTime": { "hour": 8, "minute": 30 },
+    "closeTime": { "hour": 17, "minute": 0 },
+    "reservationMinuteInterval": 15
+}

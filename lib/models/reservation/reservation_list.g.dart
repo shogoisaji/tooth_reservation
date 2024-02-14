@@ -7,7 +7,7 @@ part of 'reservation_list.dart';
 // **************************************************************************
 
 String _$reservationListStreamHash() =>
-    r'7363fdf4dade43807e20a659abfea14ad154dd82';
+    r'8e3d5c03e936528396554dc68fe773b2c4a99a57';
 
 /// See also [reservationListStream].
 @ProviderFor(reservationListStream)
@@ -24,12 +24,12 @@ final reservationListStreamProvider =
 
 typedef ReservationListStreamRef
     = AutoDisposeStreamProviderRef<List<Reservation>?>;
-String _$reservationListHash() => r'2a22404fa738c4f725d49067785baa4c3432c03b';
+String _$reservationListHash() => r'b583ceaa3786d772fc540f7554cff527c7ed0feb';
 
 /// See also [reservationList].
 @ProviderFor(reservationList)
 final reservationListProvider =
-    AutoDisposeProvider<List<Reservation>?>.internal(
+    AutoDisposeProvider<ReservationListState>.internal(
   reservationList,
   name: r'reservationListProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
@@ -39,6 +39,6 @@ final reservationListProvider =
   allTransitiveDependencies: null,
 );
 
-typedef ReservationListRef = AutoDisposeProviderRef<List<Reservation>?>;
+typedef ReservationListRef = AutoDisposeProviderRef<ReservationListState>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

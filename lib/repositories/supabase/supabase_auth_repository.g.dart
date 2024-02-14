@@ -24,7 +24,7 @@ final supabaseAuthRepositoryProvider =
 
 typedef SupabaseAuthRepositoryRef = ProviderRef<SupabaseAuthRepository>;
 String _$sessionStateStreamHash() =>
-    r'79e0ac33f71f7819a1cd3b80948793b63110bf3a';
+    r'036fe9ca553f4d7f4f452ad4dd976968662601e1';
 
 /// See also [sessionStateStream].
 @ProviderFor(sessionStateStream)
@@ -39,7 +39,7 @@ final sessionStateStreamProvider = AutoDisposeStreamProvider<Session?>.internal(
 );
 
 typedef SessionStateStreamRef = AutoDisposeStreamProviderRef<Session?>;
-String _$sessionStateHash() => r'd5ba036bbbe6fddd87b40240e2fa0fef1bf3bd4a';
+String _$sessionStateHash() => r'2f9931fdadfa74cb2f24bba6a1d12a3252424aaa';
 
 /// See also [sessionState].
 @ProviderFor(sessionState)

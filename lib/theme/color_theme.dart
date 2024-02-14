@@ -4,4 +4,5 @@ class MyColor {
   static const int mint3 = 0xFF9DF3C4;
   static const int mint4 = 0xFFD7FBE8;
   static const int green = 0xFF008E17;
+  static const int textBlack = 0xFF2E4260;
 }

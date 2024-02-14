@@ -13,7 +13,7 @@ class DetailSelectState extends _$DetailSelectState {
   void hide() => state = false;
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
 class TemporaryReservationDate extends _$TemporaryReservationDate {
   @override
   DateTime? build() => null;

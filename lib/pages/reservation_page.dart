@@ -7,6 +7,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:lottie/lottie.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:tooth_reservation/animations/calender_scale_animation.dart';
+import 'package:tooth_reservation/models/config.dart';
 import 'package:tooth_reservation/models/reservation/reservation.dart';
 import 'package:tooth_reservation/models/reservation/reservation_list.dart';
 import 'package:tooth_reservation/repositories/supabase/supabase_auth_repository.dart';
@@ -20,15 +21,14 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 class ReservationPage extends HookConsumerWidget {
   const ReservationPage({super.key});
 
-  final double minWidth = 350;
-  final double maxWidth = 450;
+  static const double minWidth = 350;
+  static const double maxWidth = 450;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final List<Reservation>? reservationList = ref.watch(reservationListProvider);
     final w = MediaQuery.sizeOf(context).width;
     final isDragging = useState<bool>(false);
-    // final reservationList = useState<List<Reservation>>([]);
     final _calenderWidth = MediaQuery.sizeOf(context).width < minWidth
         ? minWidth
         : MediaQuery.sizeOf(context).width > maxWidth
@@ -36,24 +36,13 @@ class ReservationPage extends HookConsumerWidget {
             : MediaQuery.sizeOf(context).width;
     final selectedMonth = useState<Map<String, int>>({"year": DateTime.now().year, "month": DateTime.now().month});
     final isCurrentMonthSelected = useState<bool>(true);
-    useEffect(() {
-      print(reservationList);
-      return () {};
-    }, []);
 
-    useEffect(() {
-      if (selectedMonth.value["year"]! == DateTime.now().year &&
-          selectedMonth.value["month"]! == DateTime.now().month) {
-        isCurrentMonthSelected.value = true;
-      } else {
-        isCurrentMonthSelected.value = false;
-      }
-      return () {};
-    }, [selectedMonth.value]);
+    // 選択月の初日の曜日を取得
     int getFirstWeekDay() {
       return DateTime(selectedMonth.value["year"]!, selectedMonth.value["month"]!).weekday;
     }
 
+    // 選択月の日付をリストで生成
     List<DateTime> daysListGenerate(int year, int month) {
       final List<DateTime> daysList = [];
       for (int i = 1; i < DateTime(year, month + 1, 0).day + 1; i++) {
@@ -62,36 +51,26 @@ class ReservationPage extends HookConsumerWidget {
       return daysList;
     }
 
-    String selectedDateConvert() {
-      final DateTime? selectTime = ref.watch(temporaryReservationDateProvider);
-      final DateTime? selectDate = ref.watch(selectedDateProvider);
-      if (selectTime == null || selectDate == null) {
-        return "not selected";
+    // 選択月が現在の月かどうかをチェック
+    void checkIfCurrentMonth() {
+      if (selectedMonth.value["year"] == DateTime.now().year && selectedMonth.value["month"] == DateTime.now().month) {
+        isCurrentMonthSelected.value = true;
+      } else {
+        isCurrentMonthSelected.value = false;
       }
-      return "${selectDate.month}/${selectDate.day} ${selectTime.hour}:${selectTime.minute}";
     }
 
+    // loading
     useEffect(() {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         ref.read(loadingStateProvider.notifier).show();
       });
-      //TODO stream修正 予約情報を取得できていない
-
       if (reservationList != []) {
         Future.delayed(const Duration(milliseconds: 500), () {
           ref.read(loadingStateProvider.notifier).hide();
         });
       }
-      // final StreamSubscription<List<Reservation>> stream = _client.getReservationListAllStream().listen((event) {
-      //   print('event: ${event.length}');
-      //   reservationList.value = event;
-      //   Future.delayed(const Duration(milliseconds: 500), () {
-      //     ref.read(loadingStateProvider.notifier).hide();
-      //   });
-      // });
-      return () {
-        // stream.cancel();
-      };
+      return () {};
     }, []);
 
     return Container(
@@ -100,7 +79,6 @@ class ReservationPage extends HookConsumerWidget {
           begin: Alignment(-0.8, 0.3),
           end: Alignment(0.3, 0.0),
           colors: [
-            // Color(MyColor.mint1),
             Color(MyColor.mint1),
             Color(MyColor.mint2),
           ],
@@ -132,7 +110,6 @@ class ReservationPage extends HookConsumerWidget {
                       decoration: BoxDecoration(
                         color: Colors.white.withOpacity(0.2),
                         shape: BoxShape.circle,
-                        // border: Border.all(width: 2.0, color: Colors.green[300]!.withOpacity(0.5)),
                       )),
                 ),
                 Positioned(
@@ -144,13 +121,11 @@ class ReservationPage extends HookConsumerWidget {
                       decoration: BoxDecoration(
                         color: Colors.white.withOpacity(0.1),
                         shape: BoxShape.circle,
-                        // border: Border.all(width: 2.0, color: Colors.green[300]!.withOpacity(0.5)),
                       )),
                 ),
                 Center(
-                  child: Container(
+                  child: SizedBox(
                     width: _calenderWidth,
-                    // color: Colors.grey[100],
                     child: Column(
                       children: [
                         Padding(
@@ -172,9 +147,10 @@ class ReservationPage extends HookConsumerWidget {
                                     newYear = newYear - 1;
                                   }
                                   selectedMonth.value = {"year": newYear, "month": newMonth};
+                                  checkIfCurrentMonth();
                                 },
                               ),
-                              GestureDetector(
+                              InkWell(
                                 onTap: () {
                                   selectedMonth.value = {"year": DateTime.now().year, "month": DateTime.now().month};
                                 },
@@ -193,11 +169,13 @@ class ReservationPage extends HookConsumerWidget {
                                     newYear = newYear + 1;
                                   }
                                   selectedMonth.value = {"year": newYear, "month": newMonth};
+                                  checkIfCurrentMonth();
                                 },
                               ),
                             ],
                           ),
                         ),
+                        // 曜日表示
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
@@ -237,9 +215,10 @@ class ReservationPage extends HookConsumerWidget {
                             ),
                           ],
                         ),
+                        // カレンダー表示
                         Expanded(
                           child: GridView.builder(
-                              physics: const NeverScrollableScrollPhysics(),
+                              // physics: const NeverScrollableScrollPhysics(),
                               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                                 crossAxisCount: 7,
                                 crossAxisSpacing: 0,
@@ -267,71 +246,20 @@ class ReservationPage extends HookConsumerWidget {
                                 final Color? color = count == 0
                                     ? Colors.white
                                     : Colors.red[100 * (count + 1) > 900 ? 900 : 100 * (count + 1)];
-                                return index < getFirstWeekDay() ? Container() : DayContent(day!, color!);
+                                return index < getFirstWeekDay()
+                                    ? Container()
+                                    : DayContent(day!, color!, selectedMonth.value);
                               }),
                         ),
                         const TemporaryDateWidget(),
-                        SizedBox(
-                          width: double.infinity,
-                          height: 190,
-                          child: Align(
-                            alignment: Alignment(0, -0.9),
-                            child: ref.watch(temporaryReservationDateProvider) != null
-                                ? ElevatedButton(
-                                    onPressed: () {
-                                      ref.read(temporaryReservationDateProvider.notifier).selectDate(null);
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.white,
-                                      elevation: 5,
-                                      shape: RoundedRectangleBorder(
-                                        side: BorderSide(color: Colors.green[700]!, width: 3.0),
-                                        borderRadius: BorderRadius.circular(12.0),
-                                      ),
-                                      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
-                                    ),
-                                    child: Text('リセット',
-                                        style: TextStyle(
-                                            color: Colors.green[700], fontSize: 18, fontWeight: FontWeight.bold)),
-                                  )
-                                : const Padding(
-                                    padding: EdgeInsets.only(top: 8.0),
-                                    child: Text('日にちを選択してください',
-                                        style: TextStyle(
-                                            color: Color(MyColor.mint4), fontSize: 22, fontWeight: FontWeight.bold)),
-                                  ),
-                          ),
-                        ),
+                        const SizedBox(
+                          height: 150,
+                        )
                       ],
                     ),
                   ),
                 ),
                 ref.watch(detailSelectStateProvider) ? const ReservationSelectWidget() : Container(),
-                // ref.watch(loadingStateProvider) ? const Loading() : Container(),
-                // Positioned(
-                //   bottom: 200,
-                //   child: ElevatedButton(
-                //     onPressed: () async {
-                //       try {
-                //         final String? userId = ref.read(loggedInUserProvider)?.userId;
-                //         final res = Reservation(
-                //           id: 1,
-                //           userId: userId,
-                //           userName: 'test',
-                //           email: 'email',
-                //           phoneNumber: '000-0000-0000',
-                //           date: DateTime(2024, 2, 8, 13, 00),
-                //         );
-                //         final service = ReservationService();
-                //         final data = await service.insertReservation(res);
-                //         print('data:$data');
-                //       } catch (e) {
-                //         print('エラーが発生しました: $e');
-                //       }
-                //     },
-                //     child: Text('予約'),
-                //   ),
-                // ),
               ],
             ),
           ),
@@ -360,9 +288,6 @@ class ReservationPage extends HookConsumerWidget {
                               shape: BoxShape.circle,
                             ),
                           ),
-                          onDragCompleted: () {
-                            print('drag completed');
-                          },
                           child: Lottie.asset(
                             'assets/lottie/hurt_tooth.json',
                             width: 95,
@@ -417,6 +342,30 @@ class ReservationPage extends HookConsumerWidget {
               ),
             ),
           ),
+          ref.read(detailSelectStateProvider) &&
+                  !isDragging.value &&
+                  ref.watch(temporaryReservationDateProvider) == null
+              ? Align(
+                  alignment: Alignment(0, 0.91),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 8.0),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8.0),
+                      color: Colors.blue[100],
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.2),
+                          spreadRadius: 2,
+                          blurRadius: 3,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: Text('ドラッグ',
+                        style: TextStyle(color: Colors.blue[900], fontSize: 24, fontWeight: FontWeight.bold)),
+                  ),
+                )
+              : Container(),
           ref.watch(detailSelectStateProvider) &&
                   !isDragging.value &&
                   ref.watch(temporaryReservationDateProvider) == null
@@ -439,7 +388,8 @@ class ReservationPage extends HookConsumerWidget {
 class DayContent extends HookConsumerWidget {
   final DateTime day;
   final Color color;
-  const DayContent(this.day, this.color, {super.key});
+  final Map<String, int> selectedMonth;
+  const DayContent(this.day, this.color, this.selectedMonth, {super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -462,6 +412,7 @@ class DayContent extends HookConsumerWidget {
       }
       if (day.year == tempoDay!.year && day.month == tempoDay.month && day.day == tempoDay.day) {
         isReserved.value = true;
+        print('reservedCheck: $tempoDay');
         return;
       }
       isReserved.value = false;
@@ -474,7 +425,7 @@ class DayContent extends HookConsumerWidget {
         isReserved.value = false;
       }
       return () {};
-    }, [ref.watch(temporaryReservationDateProvider)]);
+    }, [ref.watch(temporaryReservationDateProvider), selectedMonth]);
 
     useEffect(() {
       getContainerSize();
@@ -569,41 +520,66 @@ class TemporaryDateWidget extends HookConsumerWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Expanded(
-              child: Column(
-                children: [
-                  Text('選択中の予約日時',
-                      style: TextStyle(color: Colors.green[900], fontWeight: FontWeight.normal, fontSize: 20)),
-                  Container(
-                    // width: double.infinity,
-                    margin: const EdgeInsets.only(top: 4.0),
-                    padding: const EdgeInsets.all(4.0),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8.0),
-                      color: Colors.black.withOpacity(0.1),
-                    ),
-                    child: Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(6.0),
-                          color: Colors.white,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.white.withOpacity(0.9),
-                              spreadRadius: 2,
-                              blurRadius: 1,
-                              offset: const Offset(0, 0.5),
-                            ),
-                          ],
+              child: tempoDay != null
+                  ? Column(
+                      children: [
+                        Text('選択中の予約日時',
+                            style: TextStyle(color: Colors.green[900], fontWeight: FontWeight.normal, fontSize: 18)),
+                        Container(
+                          // width: double.infinity,
+                          margin: const EdgeInsets.only(top: 4.0),
+                          padding: const EdgeInsets.all(4.0),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8.0),
+                            color: Colors.black.withOpacity(0.1),
+                          ),
+                          child: Container(
+                              width: double.infinity,
+                              height: w > Config.breakPoint ? 50 : 40,
+                              padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(6.0),
+                                color: Colors.white,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.white.withOpacity(0.9),
+                                    spreadRadius: 2,
+                                    blurRadius: 1,
+                                    offset: const Offset(0, 0.5),
+                                  ),
+                                ],
+                              ),
+                              child: Stack(
+                                children: [
+                                  Center(
+                                    child: Text(formattedDate,
+                                        style: TextStyle(
+                                            color: Colors.green[800],
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: w > 700 ? 24 : 20)),
+                                  ),
+                                  Align(
+                                    alignment: Alignment.centerRight,
+                                    child: InkWell(
+                                      child: Icon(Icons.cancel, color: Colors.green[300]),
+                                      onTap: () {
+                                        ref.read(temporaryReservationDateProvider.notifier).selectDate(null);
+                                      },
+                                    ),
+                                  ),
+                                ],
+                              )),
                         ),
-                        child: Center(
-                          child: Text(formattedDate,
-                              style: TextStyle(
-                                  color: Colors.green[800], fontWeight: FontWeight.bold, fontSize: w > 700 ? 24 : 20)),
-                        )),
-                  ),
-                ],
-              ),
+                      ],
+                    )
+                  : Center(
+                      child: Text('予約したい日を選択してください',
+                          style: TextStyle(
+                              color: Colors.green[800],
+                              fontWeight: FontWeight.bold,
+                              fontSize: w > Config.breakPoint ? 22 : 18)),
+                    ),
             ),
             InkWell(
               onTap: () {

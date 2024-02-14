@@ -23,12 +23,12 @@ final detailSelectStateProvider =
 
 typedef _$DetailSelectState = AutoDisposeNotifier<bool>;
 String _$temporaryReservationDateHash() =>
-    r'48388b992258fadd2fb932fe941f2ed8038545ae';
+    r'4b2fbca8cfbffa6979472ff74a30ac3a951bd77c';
 
 /// See also [TemporaryReservationDate].
 @ProviderFor(TemporaryReservationDate)
 final temporaryReservationDateProvider =
-    AutoDisposeNotifierProvider<TemporaryReservationDate, DateTime?>.internal(
+    NotifierProvider<TemporaryReservationDate, DateTime?>.internal(
   TemporaryReservationDate.new,
   name: r'temporaryReservationDateProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
@@ -38,7 +38,7 @@ final temporaryReservationDateProvider =
   allTransitiveDependencies: null,
 );
 
-typedef _$TemporaryReservationDate = AutoDisposeNotifier<DateTime?>;
+typedef _$TemporaryReservationDate = Notifier<DateTime?>;
 String _$selectedDateHash() => r'bd5bfdc5c0202498b5cd755e663769f3ce1df8fa';
 
 /// See also [SelectedDate].

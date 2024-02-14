@@ -49,7 +49,7 @@ GoRouter router(RouterRef ref) {
       path: '/home',
       builder: (BuildContext context, GoRouterState state) {
         return Scaffold(
-          backgroundColor: const Color(MyColor.mint4),
+          backgroundColor: const Color(MyColor.mint1),
           appBar: AppBar(
             title: const Text('ホーム', style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold)),
             backgroundColor: const Color(MyColor.mint1),
@@ -76,7 +76,7 @@ GoRouter router(RouterRef ref) {
           path: 'reservation',
           builder: (BuildContext context, GoRouterState state) {
             return Scaffold(
-              backgroundColor: const Color(MyColor.mint4),
+              backgroundColor: const Color(MyColor.mint2),
               appBar: AppBar(
                 title:
                     const Text('予約', style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold)),

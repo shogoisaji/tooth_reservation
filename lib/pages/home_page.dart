@@ -34,15 +34,20 @@ class HomePage extends HookConsumerWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
+              SizedBox(
+                height: w > Config.breakPoint ? 24.0 : 12.0,
+              ),
               _reservationStatusCard(nextReservation, w),
-              const SizedBox(
-                height: 8,
+              SizedBox(
+                height: w > Config.breakPoint ? 14.0 : 8,
               ),
               Row(children: [
                 Expanded(
                     child: _reservationHistoryCard(reservationHistory, w,
                         reservationHistoryCardKey: reservationHistoryCardKey)),
-                const SizedBox(width: 8),
+                SizedBox(
+                  width: w > Config.breakPoint ? 14.0 : 8,
+                ),
                 Expanded(child: _goToReservationPageButton(context, w, reservationHistoryCardHeight.value)),
               ]),
             ],

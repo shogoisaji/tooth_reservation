@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -43,12 +45,23 @@ class SupabaseRepository {
     }
   }
 
+  // Stream<List<Reservation>?> reservationListStream() {
+  //   return _client
+  //       .from('reservation')
+  //       .stream(primaryKey: ['id'])
+  //       .map((maps) => maps.map((map) => Reservation.fromJson(map)).toList())
+  //       .handleError((_) => []);
+  // }
   Stream<List<Reservation>?> reservationListStream() {
-    return _client
-        .from('reservation')
-        .stream(primaryKey: ['id'])
-        .map((maps) => maps.map((map) => Reservation.fromJson(map)).toList())
-        .handleError((_) => []);
+    final StreamController<List<Reservation>?> controller = StreamController();
+    _client.from('reservation').stream(primaryKey: ['id']).listen((maps) {
+      final reservations = maps.map((map) => Reservation.fromJson(map)).toList();
+      controller.add(reservations);
+    }).onError((error) {
+      controller.addError(error);
+    });
+
+    return controller.stream;
   }
 
   Future<List<Reservation>> getReservationListAll() async {

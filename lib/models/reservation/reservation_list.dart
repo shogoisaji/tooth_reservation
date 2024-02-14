@@ -4,24 +4,27 @@ import 'package:tooth_reservation/repositories/supabase/supabase_repository.dart
 
 part 'reservation_list.g.dart';
 
-@riverpod
-Stream<List<Reservation>?> reservationListStream(ReservationListStreamRef ref) {
-  final stream = ref.watch(supabaseRepositoryProvider).reservationListStream();
-  return stream;
+class ReservationListState {
+  final List<Reservation>? data;
+  final String? errorMessage;
+
+  ReservationListState({this.data, this.errorMessage});
+
+  bool get isLoading => data == null && errorMessage == null;
+  bool get hasError => errorMessage != null;
 }
 
 @riverpod
-List<Reservation>? reservationList(ReservationListRef ref) {
+Stream<List<Reservation>?> reservationListStream(ReservationListStreamRef ref) {
+  return ref.watch(supabaseRepositoryProvider).reservationListStream();
+}
+
+@riverpod
+ReservationListState reservationList(ReservationListRef ref) {
   final reservationList = ref.watch(reservationListStreamProvider);
   return reservationList.when(
-    loading: () => [],
-    error: (e, __) {
-      print("error: $e");
-      return [];
-    },
-    data: (d) {
-      print("reservationList: ${d != null ? d.length : 0}");
-      return d;
-    },
+    loading: () => ReservationListState(),
+    error: (e, __) => ReservationListState(errorMessage: "reservationList fetch error:$e"),
+    data: (d) => ReservationListState(data: d),
   );
 }

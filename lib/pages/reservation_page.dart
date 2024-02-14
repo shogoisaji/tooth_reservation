@@ -26,7 +26,19 @@ class ReservationPage extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final List<Reservation>? reservationList = ref.watch(reservationListProvider);
+    final reservationListState = useState<ReservationListState>(ReservationListState());
+    // reservationListのstreamを監視
+    useEffect(() {
+      reservationListState.value = ref.watch(reservationListProvider);
+      if (reservationListState.value.hasError) {
+        print('reservationListState: ${reservationListState.value.errorMessage}');
+      } else if (reservationListState.value.isLoading) {
+        print('reservationListState: loading');
+      } else {
+        print('reservationListState: complete fetch');
+      }
+      return;
+    }, [ref.watch(reservationListProvider)]);
     final w = MediaQuery.sizeOf(context).width;
     final isDragging = useState<bool>(false);
     final _calenderWidth = MediaQuery.sizeOf(context).width < minWidth
@@ -232,9 +244,9 @@ class ReservationPage extends HookConsumerWidget {
                                     ? null
                                     : daysListGenerate(selectedMonth.value["year"]!, selectedMonth.value["month"]!)[
                                         index - getFirstWeekDay()];
-                                int count = reservationList == null
+                                int count = reservationListState.value.data == null
                                     ? 0
-                                    : reservationList.where((reservation) {
+                                    : reservationListState.value.data!.where((reservation) {
                                         // 時間を無視して日付のみ
                                         final convertDate = DateTime(
                                           reservation.reservationDate.year,

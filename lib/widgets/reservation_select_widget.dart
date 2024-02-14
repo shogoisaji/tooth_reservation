@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:tooth_reservation/models/reservation/reservation.dart';
 import 'package:tooth_reservation/models/reservation/reservation_list.dart';
 import 'package:tooth_reservation/models/settings/business_hour_settings.dart';
 import 'package:tooth_reservation/states/app_state.dart';
@@ -31,11 +30,11 @@ class ReservationSelectWidget extends HookConsumerWidget {
 
     bool checkExistReservation(TimeOfDay time) {
       DateTime convertDate = DateTime(selectedDate.year, selectedDate.month, selectedDate.day, time.hour, time.minute);
-      final List<Reservation>? reservedList = ref.watch(reservationListProvider);
-      if (reservedList == null) {
+      final ReservationListState reservedListState = ref.watch(reservationListProvider);
+      if (reservedListState.data == null) {
         return false;
       }
-      for (final reservation in reservedList) {
+      for (final reservation in reservedListState.data!) {
         if (reservation.reservationDate == convertDate) {
           return true;
         }

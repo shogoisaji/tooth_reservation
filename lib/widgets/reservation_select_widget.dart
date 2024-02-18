@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:intl/intl.dart';
 import 'package:tooth_reservation/models/reservation/reservation_list.dart';
 import 'package:tooth_reservation/models/settings/business_hour_settings.dart';
 import 'package:tooth_reservation/states/app_state.dart';
+import 'package:tooth_reservation/string.dart';
 import 'package:tooth_reservation/theme/color_theme.dart';
 
 class ReservationSelectWidget extends HookConsumerWidget {
@@ -19,7 +19,6 @@ class ReservationSelectWidget extends HookConsumerWidget {
     final animationController = useAnimationController(duration: const Duration(milliseconds: durationValue));
     final animation = CurvedAnimation(parent: animationController, curve: Curves.easeInOut);
     final w = MediaQuery.sizeOf(context).width;
-    final DateFormat format = DateFormat('yyyy.MM.dd');
     final selectedDate = ref.watch(selectedDateProvider);
     final availableTimes = ref.watch(businessHourSettingsProvider).getReservationAvailableTimes();
     final availableTimesInterval = ref.watch(businessHourSettingsProvider).reservationMinuteInterval;
@@ -105,7 +104,7 @@ class ReservationSelectWidget extends HookConsumerWidget {
                           alignment: Alignment.topCenter,
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: Text(format.format(selectedDate),
+                            child: Text(selectedDate.toString().toYMDString(),
                                 style: TextStyle(color: Colors.green[800]!, fontSize: 22, fontWeight: FontWeight.bold)),
                           ),
                         ),

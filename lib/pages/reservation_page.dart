@@ -13,6 +13,7 @@ import 'package:tooth_reservation/models/reservation/reservation_list.dart';
 import 'package:tooth_reservation/repositories/supabase/supabase_auth_repository.dart';
 import 'package:tooth_reservation/repositories/supabase/supabase_repository.dart';
 import 'package:tooth_reservation/states/app_state.dart';
+import 'package:tooth_reservation/string.dart';
 import 'package:tooth_reservation/theme/color_theme.dart';
 import 'package:tooth_reservation/widgets/loading.dart';
 import 'package:tooth_reservation/widgets/reservation_select_widget.dart';
@@ -503,12 +504,6 @@ class TemporaryDateWidget extends HookConsumerWidget {
     final tempoDay = ref.watch(temporaryReservationDateProvider);
     final w = MediaQuery.sizeOf(context).width;
 
-    String formatDate(DateTime date) {
-      return "${date.year}/${date.month}/${date.day} ${date.hour}:${date.minute == 0 ? '00' : date.minute}";
-    }
-
-    final String formattedDate = tempoDay != null ? formatDate(tempoDay) : "";
-
     return Container(
         padding: const EdgeInsets.fromLTRB(12.0, 4.0, 12.0, 8.0),
         decoration: BoxDecoration(
@@ -565,7 +560,7 @@ class TemporaryDateWidget extends HookConsumerWidget {
                               child: Stack(
                                 children: [
                                   Center(
-                                    child: Text(formattedDate,
+                                    child: Text(tempoDay.toString().toYMDHMString(),
                                         style: TextStyle(
                                             color: Colors.green[800],
                                             fontWeight: FontWeight.bold,
@@ -636,18 +631,13 @@ class CustomDialog extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final _client = ref.watch(supabaseRepositoryProvider);
-    String formatDate(DateTime date) {
-      return "${date.year}/${date.month}/${date.day} ${date.hour}:${date.minute == 0 ? '00' : date.minute}";
-    }
-
-    final String formattedDate = formatDate(date);
     final isLoggedIn = ref.watch(supabaseAuthRepositoryProvider).authUser != null;
     return AlertDialog(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12.0),
       ),
       title: const Text('予約確認'),
-      content: Text('$formattedDate\nで予約しますか？', style: const TextStyle(fontSize: 20)),
+      content: Text('${date.toString().toYMDHMString()}\nで予約しますか？', style: const TextStyle(fontSize: 20)),
       actions: [
         TextButton(
           onPressed: () {

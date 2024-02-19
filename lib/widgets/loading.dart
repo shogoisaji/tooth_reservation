@@ -33,18 +33,15 @@ class Loading extends HookConsumerWidget {
         animation: opacityController,
         builder: (context, child) => Opacity(
             opacity: opacityController.value,
-            child: Opacity(
-              opacity: opacityController.value,
-              child: Container(
-                alignment: const Alignment(-0.08, -0.1),
-                width: w,
-                height: double.infinity,
-                color: const Color(MyColor.mint4),
-                child: Lottie.asset(
-                  'assets/lottie/tooth_wash.json',
-                  controller: animationController,
-                  width: 150,
-                ),
+            child: Container(
+              alignment: const Alignment(-0.08, -0.1),
+              width: w,
+              height: double.infinity,
+              color: const Color(MyColor.mint4),
+              child: Lottie.asset(
+                'assets/lottie/tooth_wash.json',
+                controller: animationController,
+                width: 150,
               ),
             )),
       ),

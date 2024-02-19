@@ -162,7 +162,6 @@ class ScheduleTimeContent extends HookConsumerWidget {
           ref.watch(selectedDateProvider).day,
           availableTimes[index].hour,
           availableTimes[index].minute);
-      print('selectedDate:$selectedDate');
       if (selectedDate == null) {
         isSelected.value = false;
         return;
@@ -202,7 +201,7 @@ class ScheduleTimeContent extends HookConsumerWidget {
         animation: animation,
         builder: (context, child) {
           return DragTarget(
-            onAccept: (data) {
+            onAccept: (_) {
               ref.read(temporaryReservationDateProvider.notifier).selectDate(DateTime(
                   ref.watch(selectedDateProvider).year,
                   ref.watch(selectedDateProvider).month,

@@ -45,6 +45,21 @@ class SupabaseRepository {
     }
   }
 
+  Future<int> fetchNextReservationId() async {
+    try {
+      final response = await _client.from('reservation').select('id').order('id', ascending: false).limit(1);
+      // if (response.error != null) {
+      //   throw Exception('Fetch error: ${response.error!.message}');
+      // }
+      // if (response.data == null) {
+      //   return 1;
+      // }
+      return response[0]['id'] + 1;
+    } catch (err) {
+      throw err.toString();
+    }
+  }
+
   // Stream<List<Reservation>?> reservationListStream() {
   //   return _client
   //       .from('reservation')

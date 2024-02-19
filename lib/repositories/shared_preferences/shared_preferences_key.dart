@@ -1,5 +1,5 @@
 enum SharedPreferencesKey {
-  reservationId('reservationId'),
+  reservation('reservation'),
   ;
 
   const SharedPreferencesKey(this.value);

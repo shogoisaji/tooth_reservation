@@ -10,6 +10,8 @@ import 'package:tooth_reservation/animations/calender_scale_animation.dart';
 import 'package:tooth_reservation/models/config.dart';
 import 'package:tooth_reservation/models/reservation/reservation.dart';
 import 'package:tooth_reservation/models/reservation/reservation_list.dart';
+import 'package:tooth_reservation/repositories/shared_preferences/shared_preferences_key.dart';
+import 'package:tooth_reservation/repositories/shared_preferences/shared_preferences_repository.dart';
 import 'package:tooth_reservation/repositories/supabase/supabase_auth_repository.dart';
 import 'package:tooth_reservation/repositories/supabase/supabase_repository.dart';
 import 'package:tooth_reservation/states/app_state.dart';
@@ -32,12 +34,8 @@ class ReservationPage extends HookConsumerWidget {
     useEffect(() {
       reservationListState.value = ref.watch(reservationListProvider);
       if (reservationListState.value.hasError) {
-        print('reservationListState: ${reservationListState.value.errorMessage}');
       } else if (reservationListState.value.isLoading) {
-        print('reservationListState: loading');
-      } else {
-        print('reservationListState: complete fetch');
-      }
+      } else {}
       return;
     }, [ref.watch(reservationListProvider)]);
     final w = MediaQuery.sizeOf(context).width;
@@ -505,6 +503,7 @@ class TemporaryDateWidget extends HookConsumerWidget {
     final w = MediaQuery.sizeOf(context).width;
 
     return Container(
+        margin: const EdgeInsets.symmetric(horizontal: 4.0),
         padding: const EdgeInsets.fromLTRB(12.0, 4.0, 12.0, 8.0),
         decoration: BoxDecoration(
           borderRadius: const BorderRadius.only(
@@ -631,6 +630,7 @@ class CustomDialog extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final _client = ref.watch(supabaseRepositoryProvider);
+    final _sharedPreferences = ref.watch(sharedPreferencesRepositoryProvider);
     final isLoggedIn = ref.watch(supabaseAuthRepositoryProvider).authUser != null;
     return AlertDialog(
       shape: RoundedRectangleBorder(
@@ -648,29 +648,52 @@ class CustomDialog extends HookConsumerWidget {
         ElevatedButton(
           onPressed: () async {
             if (!isLoggedIn) {
-              context.pop();
-              context.go('/home/reservation/reservation_form');
+              Navigator.of(context).pop();
+              context.go('/reservation/reservation_form');
               return;
             }
-            context.pop();
+            final User? user = ref.watch(supabaseAuthRepositoryProvider).authUser;
+            if (user == null) {
+              return;
+            }
+            final res = Reservation(
+              userId: user.id,
+              userName: null,
+              email: null,
+              phoneNumber: null,
+              reservationDate: date,
+            );
             try {
-              final User? user = ref.watch(supabaseAuthRepositoryProvider).authUser;
-              if (user == null) {
-                return;
-              }
-              final res = Reservation(
-                id: 1,
-                userId: user.id,
-                userName: null,
-                email: null,
-                phoneNumber: null,
-                reservationDate: date,
-              );
+              ref.read(loadingStateProvider.notifier).show();
               final data = await _client.insertReservation(res);
-              ref.read(temporaryReservationDateProvider.notifier).selectDate(null);
+              _sharedPreferences.saveCurrentReservation(
+                  SharedPreferencesKey.reservation, res.reservationDate.toIso8601String());
               print('insert result:$data');
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    duration: Duration(milliseconds: 1000),
+                    content: Center(
+                        child: Text('予約が完了しました',
+                            style: TextStyle(color: Colors.white, fontSize: 20.0, fontWeight: FontWeight.bold))),
+                    backgroundColor: Colors.blue,
+                  ),
+                );
+              }
+              Future.delayed(const Duration(milliseconds: 1000), () {
+                ref.read(temporaryReservationDateProvider.notifier).selectDate(null);
+                ref.read(loadingStateProvider.notifier).hide();
+                context.go('/');
+              });
             } catch (e) {
-              print('エラーが発生しました: $e');
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('予約に失敗しました: $e'),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+              }
             }
           },
           style: ElevatedButton.styleFrom(

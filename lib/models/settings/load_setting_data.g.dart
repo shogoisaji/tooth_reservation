@@ -6,7 +6,7 @@ part of 'load_setting_data.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$loadSettingDataHash() => r'7fbc6d54ef5bd4f7cd9b5e1d4328b273d558848d';
+String _$loadSettingDataHash() => r'94699c4900ed34746408574be1a4f23df763f023';
 
 /// See also [LoadSettingData].
 @ProviderFor(LoadSettingData)

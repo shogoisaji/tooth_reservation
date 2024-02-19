@@ -12,10 +12,14 @@ class LoadSettingData extends _$LoadSettingData {
   BusinessHourSettingData? build() => null;
 
   Future<void> load() async {
-    final String data = await rootBundle.loadString('assets/data/business_hour_data.json');
-    final Map<String, dynamic> jsonResult = json.decode(data);
-    final settingData = BusinessHourSettingData.fromJson(jsonResult);
-    print("settingData loaded: $settingData");
-    state = settingData;
+    try {
+      final String data = await rootBundle.loadString('assets/data/business_hour_data.json');
+      final Map<String, dynamic> jsonResult = json.decode(data);
+      final settingData = BusinessHourSettingData.fromJson(jsonResult);
+      print("settingData loaded: $settingData");
+      state = settingData;
+    } catch (e) {
+      print("error: $e");
+    }
   }
 }

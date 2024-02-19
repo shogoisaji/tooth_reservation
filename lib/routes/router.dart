@@ -11,6 +11,7 @@ import 'package:tooth_reservation/pages/reservation_form.dart';
 import 'package:tooth_reservation/pages/reservation_page.dart';
 import 'package:tooth_reservation/pages/signup_page.dart';
 import 'package:tooth_reservation/repositories/supabase/supabase_auth_repository.dart';
+import 'package:tooth_reservation/routes/route_obserber.dart';
 import 'package:tooth_reservation/theme/color_theme.dart';
 
 part 'router.g.dart';
@@ -46,7 +47,7 @@ GoRouter router(RouterRef ref) {
       ],
     ),
     GoRoute(
-      path: '/home',
+      path: '/',
       builder: (BuildContext context, GoRouterState state) {
         return Scaffold(
           backgroundColor: const Color(MyColor.mint1),
@@ -61,7 +62,7 @@ GoRouter router(RouterRef ref) {
                     icon: const Icon(Icons.account_circle),
                     padding: const EdgeInsets.only(right: 12.0),
                     onPressed: () {
-                      context.go('/home/account');
+                      context.go('/account');
                     },
                   ),
                 ],
@@ -132,7 +133,10 @@ GoRouter router(RouterRef ref) {
   ];
 
   return GoRouter(
-    initialLocation: session != null ? '/home' : '/login',
+    initialLocation: session != null ? '/' : '/login',
     routes: routes,
+    observers: [
+      ref.watch(routeObserverProvider),
+    ],
   );
 }
